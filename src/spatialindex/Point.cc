@@ -260,3 +260,102 @@ std::ostream& SpatialIndex::operator<<(std::ostream& os, const Point& pt)
 
 	return os;
 }
+
+
+/*
+ *  Added by Yi 5/19/2011
+ * 	Computing HausDistLB from a point to an MBR or another point.
+ */
+
+double Point::getHausDistLB(const IShape& s) const
+{
+	const Region* pr = dynamic_cast<const Region*>(&s);
+	if (pr != 0) return getHausDistLB(*pr);
+
+	const Point* ppt = dynamic_cast<const Point*>(&s);
+	if (ppt != 0) return getHausDistLB(*ppt);
+
+	throw Tools::IllegalStateException(
+		"Region::getHausDistLB: Not implemented yet!"
+	);
+}
+
+double Point::getHausDistLB(const Region& s) const
+{
+	return this->getMinimumDistance(s);
+}
+
+double Point::getHausDistLB(const Point& s) const
+{
+	return this->getMinimumDistance(s);
+}
+
+
+/*
+ * Computing HausDistUB from a point to an MBR or a another point.
+ *
+ */
+
+double Point::getHausDistUB(const IShape& s) const
+{
+	const Region* pr = dynamic_cast<const Region*>(&s);
+	if (pr != 0) return getHausDistUB(*pr);
+
+	const Point* ppt = dynamic_cast<const Point*>(&s);
+	if (ppt != 0) return getHausDistUB(*ppt);
+
+	throw Tools::IllegalStateException(
+		"Region::getHausDistUB: Not implemented yet!"
+	);
+}
+
+/*
+ *  For 2D Only.
+ *
+ *  The function computes the MinFarthestDist from
+ *  the point (this) to the region s. This is done
+ *  by (i) computing the distances from the point
+ *  to the four corners of s; (ii) computing the
+ *  MaxDist from the point to each faces; (iii)
+ *  retaining the minimum MaxDist.
+ */
+double Point::getHausDistUB(const Region& s) const
+{
+	if (this->m_dimension != 2 || s.m_dimension != 2) {
+		throw Tools::NotSupportedException(
+			"Region::getHausDistUB: #dimensions not supported"
+		);
+	}
+
+	Point sw = Point(s.m_pLow, 2);
+	Point ne = Point(s.m_pHigh, 2);
+
+	double coor[2];
+	coor[0] = s.m_pHigh[0];
+	coor[1] = s.m_pLow[1];
+	Point se = Point(coor, 2);
+
+	coor[0] = s.m_pLow[0];
+	coor[1] = s.m_pHigh[1];
+	Point nw = Point(coor, 2);
+
+	double distSW = this->getMinimumDistance(sw);
+	double distNE = this->getMinimumDistance(ne);
+	double distSE = this->getMinimumDistance(se);
+	double distNW = this->getMinimumDistance(nw);
+
+	double d = std::max(distSW,distSE);
+	d = std::min(d,std::max(distSE,distNE));
+	d = std::min(d,std::max(distNE,distNW));
+	d = std::min(d,std::max(distNW,distSW));
+
+	return d;
+}
+
+double Point::getHausDistUB(const Point& s) const
+{
+	return this->getMinimumDistance(s);
+}
+
+
+

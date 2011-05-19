@@ -4,7 +4,15 @@
 *.lo
 *.la
 
+autom4te.cache
+
+.*.sw*
+aclocal.m4
+ltmain.sh
+configure
+
 Makefile
+Makefile.*
 config.log
 config.status
 

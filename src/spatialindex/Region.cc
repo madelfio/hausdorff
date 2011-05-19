@@ -254,6 +254,8 @@ double Region::getMinimumDistance(const IShape& s) const
 	);
 }
 
+
+
 bool Region::intersectsRegion(const Region& r) const
 {
 	if (m_dimension != r.m_dimension)
@@ -292,37 +294,13 @@ bool Region::touchesRegion(const Region& r) const
 	for (uint32_t i = 0; i < m_dimension; ++i)
 	{
 		if (
-			(m_pLow[i] >= r.m_pLow[i] - std::numeric_limits<double>::epsilon() &&
-			m_pLow[i] <= r.m_pLow[i] + std::numeric_limits<double>::epsilon()) ||
-			(m_pHigh[i] >= r.m_pHigh[i] - std::numeric_limits<double>::epsilon() &&
-			m_pHigh[i] <= r.m_pHigh[i] + std::numeric_limits<double>::epsilon()))
-			return true;
+			(m_pLow[i] >= r.m_pLow[i] + std::numeric_limits<double>::epsilon() &&
+			m_pLow[i] <= r.m_pLow[i] - std::numeric_limits<double>::epsilon()) ||
+			(m_pHigh[i] >= r.m_pHigh[i] + std::numeric_limits<double>::epsilon() &&
+			m_pHigh[i] <= r.m_pHigh[i] - std::numeric_limits<double>::epsilon()))
+			return false;
 	}
-	return false;
-		
-/*
-	if (m_dimension != r.m_dimension)
-		throw Tools::IllegalArgumentException(
-			"Region::touchesRegion: Regions have different number of dimensions."
-		);
-
-	for (uint32_t i = 0; i < m_dimension; ++i)
-	{
-		if (
-			(m_pLow[i] <= r.m_pHigh[i] + std::numeric_limits<double>::epsilon() &&
-			 m_pLow[i] >= r.m_pHigh[i] - std::numeric_limits<double>::epsilon()) ||
-			(m_pHigh[i] <= r.m_pLow[i] + std::numeric_limits<double>::epsilon() &&
-			 m_pHigh[i] >= r.m_pLow[i] - std::numeric_limits<double>::epsilon())
-		) {
-			for (uint32_t j = 0; j < m_dimension; ++j)
-				if (m_pLow[j] > r.m_pHigh[j] || m_pHigh[j] < r.m_pLow[j])
-					return false;
-
-			return true;
-		}
-	}
-	return false;
-*/
+	return true;
 }
 
 double Region::getMinimumDistance(const Region& r) const
@@ -576,3 +554,70 @@ std::ostream& SpatialIndex::operator<<(std::ostream& os, const Region& r)
 
 	return os;
 }
+
+
+/*
+ *  Added by Yi 5/19/2011
+ * 	Computing HausDistLB from an MBR to another MBR or a point.
+ */
+
+double Region::getHausDistLB(const IShape& s) const
+{
+	const Region* pr = dynamic_cast<const Region*>(&s);
+	if (pr != 0) return getHausDistLB(*pr);
+
+	const Point* ppt = dynamic_cast<const Point*>(&s);
+	if (ppt != 0) return getHausDistLB(*ppt);
+
+	throw Tools::IllegalStateException(
+		"Region::getHausDistLB: Not implemented yet!"
+	);
+}
+
+double Region::getHausDistLB(const Region& s) const
+{
+	double d = 0;
+
+	return d;
+}
+
+double Region::getHausDistLB(const Point& s) const
+{
+	double d = 0;
+
+	return d;
+}
+
+
+/*
+ * Computing HausDistUB from an MBR to another MBR or a point.
+ *
+ */
+
+double Region::getHausDistUB(const IShape& s) const
+{
+	const Region* pr = dynamic_cast<const Region*>(&s);
+	if (pr != 0) return getHausDistUB(*pr);
+
+	const Point* ppt = dynamic_cast<const Point*>(&s);
+	if (ppt != 0) return getHausDistUB(*ppt);
+
+	throw Tools::IllegalStateException(
+		"Region::getHausDistUB: Not implemented yet!"
+	);
+}
+
+double Region::getHausDistUB(const Region& s) const
+{
+	double d = 0;
+
+	return d;
+}
+
+double Region::getHausDistUB(const Point& s) const
+{
+	double d = 0;
+
+	return d;
+}
+
