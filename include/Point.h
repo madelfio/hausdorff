@@ -65,6 +65,15 @@ namespace SpatialIndex
 		virtual void makeInfinite(uint32_t dimension);
 		virtual void makeDimension(uint32_t dimension);
 
+		double getHausDistLB(const IShape& in) const;
+		double getHausDistLB(const Region& in) const;
+		double getHausDistLB(const Point& in) const;
+
+
+		double getHausDistUB(const IShape& in) const;
+		double getHausDistUB(const Region& in) const;
+		double getHausDistUB(const Point& in) const;
+
 	public:
 		uint32_t m_dimension;
 		double* m_pCoords;
