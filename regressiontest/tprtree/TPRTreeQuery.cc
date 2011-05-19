@@ -39,6 +39,8 @@ using namespace std;
 // the resulting data IDs to stdout.
 class MyVisitor : public IVisitor
 {
+  private:
+    double m_distance;
 public:
 	size_t m_indexIO;
 	size_t m_leafIO;
@@ -73,6 +75,8 @@ public:
 	}
 
 	void visitData(std::vector<const IData*>& v) {}
+  double getDistance() {return m_distance;}
+  void setDistance(double d) {m_distance = d;}
 };
 
 // example of a Strategy pattern.

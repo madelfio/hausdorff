@@ -58,3 +58,12 @@ void ObjVisitor::visitData(std::vector<const SpatialIndex::IData*>& v)
 {
 }
 
+double ObjVisitor::getDistance()
+{
+  return m_distance;
+}
+
+void ObjVisitor::setDistance(double d)
+{
+  m_distance = d;
+}

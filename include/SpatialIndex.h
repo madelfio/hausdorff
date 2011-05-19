@@ -164,6 +164,9 @@ namespace SpatialIndex
 		virtual void visitData(const IData& in) = 0;
 		virtual void visitData(std::vector<const IData*>& v) = 0;
 		virtual ~IVisitor() {}
+
+    virtual double getDistance() = 0;
+    virtual void setDistance(double d) = 0;
 	}; // IVisitor
 
 	class SIDX_DLL IQueryStrategy
@@ -193,6 +196,7 @@ namespace SpatialIndex
 		virtual void pointLocationQuery(const Point& query, IVisitor& v) = 0;
 		virtual void nearestNeighborQuery(uint32_t k, const IShape& query, IVisitor& v, INearestNeighborComparator& nnc) = 0;
 		virtual void nearestNeighborQuery(uint32_t k, const IShape& query, IVisitor& v) = 0;
+    virtual double hausdorff(ISpatialIndex& query, IVisitor& v) = 0;
 		virtual void selfJoinQuery(const IShape& s, IVisitor& v) = 0;
 		virtual void queryStrategy(IQueryStrategy& qs) = 0;
 		virtual void getIndexProperties(Tools::PropertySet& out) const = 0;

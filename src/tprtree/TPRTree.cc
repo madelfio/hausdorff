@@ -397,6 +397,11 @@ void SpatialIndex::TPRTree::TPRTree::nearestNeighborQuery(uint32_t k, const ISha
 	nearestNeighborQuery(k, query, v, nnc);
 }
 
+double SpatialIndex::TPRTree::TPRTree::hausdorff(ISpatialIndex& query, IVisitor& v)
+{
+  //throw Tools::IllegalArgumentException("MDA: Got Here!");
+}
+
 void SpatialIndex::TPRTree::TPRTree::selfJoinQuery(const IShape& query, IVisitor& v)
 {
 	throw Tools::IllegalStateException("selfJoinQuery: not impelmented yet.");

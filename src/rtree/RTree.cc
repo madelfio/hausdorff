@@ -511,6 +511,7 @@ void SpatialIndex::RTree::RTree::nearestNeighborQuery(uint32_t k, const IShape& 
 		uint32_t count = 0;
 		double knearest = 0.0;
 
+    int counter = 0;
 		while (! queue.empty())
 		{
 			NNEntry* pFirst = queue.top();
@@ -525,6 +526,8 @@ void SpatialIndex::RTree::RTree::nearestNeighborQuery(uint32_t k, const IShape& 
 			{
 				// n is a leaf or an index.
 				NodePtr n = readNode(pFirst->m_id);
+
+        v.setDistance(3.0);
 				v.visitNode(*n);
 
 				for (uint32_t cChild = 0; cChild < n->m_children; ++cChild)
@@ -548,6 +551,7 @@ void SpatialIndex::RTree::RTree::nearestNeighborQuery(uint32_t k, const IShape& 
 				++(m_stats.m_u64QueryResults);
 				++count;
 				knearest = pFirst->m_minDist;
+        v.setDistance(knearest);
 				delete pFirst->m_pEntry;
 			}
 
@@ -580,7 +584,57 @@ void SpatialIndex::RTree::RTree::nearestNeighborQuery(uint32_t k, const IShape& 
 	NNComparator nnc;
 	nearestNeighborQuery(k, query, v, nnc);
 }
-                                   
+
+double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, IVisitor& v)
+{
+#ifdef HAVE_PTHREAD_H
+	Tools::SharedLock lock(&m_rwLock);
+#else
+	if (m_rwLock == false) m_rwLock = true;
+	else throw Tools::ResourceLockedException("nearestNeighborQuery: cannot acquire a shared lock");
+#endif
+
+  try {
+    // COMPUTE HAUSDORFF HERE
+    std::queue<id_type> node_queue;
+
+    float hausdorff = 0.0;
+    node_queue.push(m_rootID);
+    while (! node_queue.empty())
+    {
+      id_type top = node_queue.front();
+      node_queue.pop();
+      NodePtr n = readNode(top);
+      for (uint32_t cChild = 0; cChild < n->m_children; ++cChild)
+      {
+        if (n->m_level == 0)
+        {
+          Point p = Point(n->m_ptrMBR[cChild]->m_pLow,2);
+
+          query.nearestNeighborQuery(1, p, v);
+          if (v.getDistance() > hausdorff) {
+            hausdorff = v.getDistance();
+          }
+        }
+        else {
+          node_queue.push(n->m_pIdentifier[cChild]);
+        }
+      }
+    }
+    return hausdorff;
+
+#ifndef HAVE_PTHREAD_H
+		m_rwLock = false;
+#endif
+	}
+	catch (...)
+	{
+#ifndef HAVE_PTHREAD_H
+		m_rwLock = false;
+#endif
+		throw;
+	}
+}
 
 void SpatialIndex::RTree::RTree::selfJoinQuery(const IShape& query, IVisitor& v)
 {

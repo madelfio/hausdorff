@@ -540,6 +540,65 @@ SIDX_C_DLL RTError Index_NearestNeighbors_obj(IndexH index,
 	return RT_None;
 }
 
+// Added by MDA
+SIDX_C_DLL double Index_Hausdorff(IndexH index, 
+                                  IndexH index2)
+{
+	VALIDATE_POINTER1(index, "Index_Hausdorff", RT_Failure);	 
+  VALIDATE_POINTER1(index2, "Index_Hausdorff", RT_Failure);
+	Index* idx = static_cast<Index*>(index);
+	Index* idx2 = static_cast<Index*>(index2);
+
+	ObjVisitor* visitor = new ObjVisitor;
+	try {	 
+		//idx->index().nearestNeighborQuery(	*nResults,
+		//									SpatialIndex::Region(pdMin, pdMax, nDimension), 
+		//									*visitor);
+
+				
+		//*items = (SpatialIndex::IData**) malloc (visitor->GetResultCount() * sizeof(Item*));
+		
+		//std::vector<SpatialIndex::IData*> results = visitor->GetResults();
+		//*nResults = results.size();
+		
+		// copy the Items into the newly allocated item array
+		// we need to make sure to copy the actual Item instead 
+		// of just the pointers, as the visitor will nuke them 
+		// upon ~
+		//for (uint32_t i=0; i < visitor->GetResultCount(); ++i)
+		//{
+		//	SpatialIndex::IData* result = results[i];
+		//	(*items)[i] =  dynamic_cast<SpatialIndex::IData*>(result->clone());
+
+		//}
+		
+    return idx->index().hausdorff(idx2->index(), *visitor);
+		delete visitor;
+
+	} catch (Tools::Exception& e)
+	{
+		Error_PushError(RT_Failure, 
+						e.what().c_str(), 
+						"Index_Hausdorff");
+		delete visitor;
+		return 0;
+	} catch (std::exception const& e)
+	{
+		Error_PushError(RT_Failure, 
+						e.what(), 
+						"Index_Hausdorff");
+		delete visitor;
+		return 0;
+	} catch (...) {
+		Error_PushError(RT_Failure, 
+						"Unknown Error", 
+						"Index_Hausdorff");
+		delete visitor;
+		return 0;		  
+	}
+	return 0;
+}
+
 SIDX_C_DLL RTError Index_GetBounds(	  IndexH index, 
 									double** ppdMin, 
 									double** ppdMax, 

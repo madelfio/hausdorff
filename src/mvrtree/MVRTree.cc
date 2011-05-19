@@ -378,6 +378,10 @@ void SpatialIndex::MVRTree::MVRTree::nearestNeighborQuery(uint32_t k, const ISha
 	nearestNeighborQuery(k, query, v, nnc);
 }
 
+double SpatialIndex::MVRTree::MVRTree::hausdorff(ISpatialIndex& query, IVisitor& v)
+{
+}
+
 void SpatialIndex::MVRTree::MVRTree::selfJoinQuery(const IShape& query, IVisitor& v)
 {
 	throw Tools::IllegalStateException("selfJoinQuery: not impelmented yet.");

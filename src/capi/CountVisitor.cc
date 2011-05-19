@@ -50,3 +50,13 @@ void CountVisitor::visitData(const SpatialIndex::IData& d)
 void CountVisitor::visitData(std::vector<const SpatialIndex::IData*>& v)
 {
 }
+
+double CountVisitor::getDistance()
+{
+  return m_distance;
+}
+
+void CountVisitor::setDistance(double d)
+{
+  m_distance = d;
+}

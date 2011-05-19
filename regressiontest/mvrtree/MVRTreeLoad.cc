@@ -39,6 +39,8 @@ using namespace std;
 // see MVRTreeQuery for a more elaborate example.
 class MyVisitor : public IVisitor
 {
+  private:
+    double m_distance;
 public:
 	void visitNode(const INode& n) {}
 
@@ -49,6 +51,8 @@ public:
 	}
 
 	void visitData(std::vector<const IData*>& v) {}
+  double getDistance() {return m_distance;}
+  void setDistance(double d) {m_distance = d;}
 };
 
 int main(int argc, char** argv)

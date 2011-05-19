@@ -51,3 +51,13 @@ void IdVisitor::visitData(const SpatialIndex::IData& d)
 void IdVisitor::visitData(std::vector<const SpatialIndex::IData*>& v)
 {
 }
+
+double IdVisitor::getDistance()
+{
+  return m_distance;
+}
+
+void IdVisitor::setDistance(double d)
+{
+  m_distance = d;
+}

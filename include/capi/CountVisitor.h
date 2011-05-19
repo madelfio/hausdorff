@@ -31,6 +31,7 @@ class CountVisitor : public SpatialIndex::IVisitor
 {
 private:
    uint64_t nResults;
+   double m_distance;
 
 public:
 
@@ -42,4 +43,7 @@ public:
    void visitNode(const SpatialIndex::INode& n);
    void visitData(const SpatialIndex::IData& d);
    void visitData(std::vector<const SpatialIndex::IData*>& v);
+
+   double getDistance();
+   void setDistance(double d);
 };
