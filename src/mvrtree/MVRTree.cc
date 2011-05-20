@@ -378,7 +378,7 @@ void SpatialIndex::MVRTree::MVRTree::nearestNeighborQuery(uint32_t k, const ISha
 	nearestNeighborQuery(k, query, v, nnc);
 }
 
-double SpatialIndex::MVRTree::MVRTree::hausdorff(ISpatialIndex& query, IVisitor& v)
+double SpatialIndex::MVRTree::MVRTree::hausdorff(ISpatialIndex& query, uint64_t& id1, uint64_t& id2, int mode, IVisitor& v)
 {
 }
 
