@@ -551,7 +551,9 @@ void SpatialIndex::RTree::RTree::nearestNeighborQuery(uint32_t k, const IShape& 
 				++(m_stats.m_u64QueryResults);
 				++count;
 				knearest = pFirst->m_minDist;
-        v.setDistance(knearest);
+				v.setDistance(knearest);
+
+
 				delete pFirst->m_pEntry;
 			}
 

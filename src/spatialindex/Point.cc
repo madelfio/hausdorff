@@ -339,17 +339,17 @@ double Point::getHausDistUB(const Region& s) const
 	coor[1] = s.m_pHigh[1];
 	Point nw = Point(coor, 2);
 
-	double distSW = this->getMinimumDistance(sw);
-	double distNE = this->getMinimumDistance(ne);
-	double distSE = this->getMinimumDistance(se);
-	double distNW = this->getMinimumDistance(nw);
+	double distSWsq = this->getDistanceSq(sw);
+	double distNEsq = this->getDistanceSq(ne);
+	double distSEsq = this->getDistanceSq(se);
+	double distNWsq = this->getDistanceSq(nw);
 
-	double d = std::max(distSW,distSE);
-	d = std::min(d,std::max(distSE,distNE));
-	d = std::min(d,std::max(distNE,distNW));
-	d = std::min(d,std::max(distNW,distSW));
+	double dSq = std::max(distSWsq,distSEsq);
+	dSq = std::min(dSq,std::max(distSEsq,distNEsq));
+	dSq = std::min(dSq,std::max(distNEsq,distNWsq));
+	dSq = std::min(dSq,std::max(distNWsq,distSWsq));
 
-	return d;
+	return std::sqrt(dSq);
 }
 
 double Point::getHausDistUB(const Point& s) const
@@ -357,5 +357,20 @@ double Point::getHausDistUB(const Point& s) const
 	return this->getMinimumDistance(s);
 }
 
+double Point::getDistanceSq(const Point& p) const
+{
+	if (this->m_dimension != p.m_dimension)
+		throw Tools::IllegalArgumentException(
+			"Point::getMinimumDistance: Shapes have different number of dimensions."
+		);
 
+	double ret = 0.0;
+
+	for (uint32_t cDim = 0; cDim < m_dimension; ++cDim)
+	{
+		ret += std::pow(m_pCoords[cDim] - p.m_pCoords[cDim], 2.0);
+	}
+
+	return ret;
+}
 

@@ -18,6 +18,13 @@ config.status
 config.guess
 config.sub
 
+.cproject
+.project
+Debug/
+*.dat
+*.idx
+
+
 .deps
 .libs
 libtool

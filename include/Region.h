@@ -84,12 +84,18 @@ namespace SpatialIndex
 
 
 		double getHausDistLB(const IShape& in) const;
-		double getHausDistLB(const Region& in) const;
-		double getHausDistLB(const Point& in) const;
+		double getHausDistLB(const std::vector<const IShape*> vec_pShape) const;
 
 		double getHausDistUB(const IShape& in) const;
 		double getHausDistUB(const Region& in) const;
 		double getHausDistUB(const Point& in) const;
+
+		double getMinimumDistanceSq(const IShape& in) const;
+		double getMinimumDistanceSq(const Region& in) const;
+		double getMinimumDistanceSq(const Point& p) const;
+		double getMaximumDistanceSq(const Region& in) const;
+
+		void getEdge(int edgeId, Region& cout) const;
 
 	private:
 		void initialize(const double* pLow, const double* pHigh, uint32_t dimension);

@@ -69,10 +69,11 @@ namespace SpatialIndex
 		double getHausDistLB(const Region& in) const;
 		double getHausDistLB(const Point& in) const;
 
-
 		double getHausDistUB(const IShape& in) const;
 		double getHausDistUB(const Region& in) const;
 		double getHausDistUB(const Point& in) const;
+
+		double getDistanceSq(const Point& p) const;
 
 	public:
 		uint32_t m_dimension;

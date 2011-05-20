@@ -196,7 +196,10 @@ namespace SpatialIndex
 		virtual void pointLocationQuery(const Point& query, IVisitor& v) = 0;
 		virtual void nearestNeighborQuery(uint32_t k, const IShape& query, IVisitor& v, INearestNeighborComparator& nnc) = 0;
 		virtual void nearestNeighborQuery(uint32_t k, const IShape& query, IVisitor& v) = 0;
-    virtual double hausdorff(ISpatialIndex& query, IVisitor& v) = 0;
+
+		// Added by Marco
+		virtual double hausdorff(ISpatialIndex& query, IVisitor& v) = 0;
+
 		virtual void selfJoinQuery(const IShape& s, IVisitor& v) = 0;
 		virtual void queryStrategy(IQueryStrategy& qs) = 0;
 		virtual void getIndexProperties(Tools::PropertySet& out) const = 0;

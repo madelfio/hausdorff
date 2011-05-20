@@ -24,6 +24,7 @@
 #include <cstring>
 #include <cmath>
 #include <limits>
+#include <vector>
 
 using namespace SpatialIndex;
 
@@ -563,31 +564,47 @@ std::ostream& SpatialIndex::operator<<(std::ostream& os, const Region& r)
 
 double Region::getHausDistLB(const IShape& s) const
 {
-	const Region* pr = dynamic_cast<const Region*>(&s);
-	if (pr != 0) return getHausDistLB(*pr);
+	if (this->m_dimension != 2) {
+		throw Tools::NotSupportedException(
+			"Region::getHausDistUB: #dimensions not supported"
+		);
+	}
 
-	const Point* ppt = dynamic_cast<const Point*>(&s);
-	if (ppt != 0) return getHausDistLB(*ppt);
+	Region edge1 = Region();
 
-	throw Tools::IllegalStateException(
-		"Region::getHausDistLB: Not implemented yet!"
-	);
+	double max = std::numeric_limits<double>::min();
+	for (int i=0; i<4; i++) {
+		this->getEdge(i,edge1);
+		std::max(max,edge1.getMinimumDistanceSq(s));
+	}
+
+	return std::sqrt(max);
 }
 
-double Region::getHausDistLB(const Region& s) const
+double Region::getHausDistLB(const std::vector<const IShape*> vec_pShape) const
 {
-	double d = 0;
+	if (this->m_dimension != 2) {
+		throw Tools::NotSupportedException(
+			"Region::getHausDistUB: #dimensions not supported"
+		);
+	}
 
-	return d;
+	Region edge1 = Region();
+
+	double max = std::numeric_limits<double>::min();
+	for (int i=0; i<4; i++) {
+		this->getEdge(i,edge1);
+		double min = std::numeric_limits<double>::max();
+
+		for (int j=0; j<  vec_pShape.size(); j++) {
+			std::min(min,edge1.getMinimumDistanceSq(*(vec_pShape[j])));
+		}
+
+		std::max(max,min);
+	}
+
+	return std::sqrt(max);
 }
-
-double Region::getHausDistLB(const Point& s) const
-{
-	double d = 0;
-
-	return d;
-}
-
 
 /*
  * Computing HausDistUB from an MBR to another MBR or a point.
@@ -609,15 +626,189 @@ double Region::getHausDistUB(const IShape& s) const
 
 double Region::getHausDistUB(const Region& s) const
 {
-	double d = 0;
+	Region edge1 = Region();
+	Region edge2 = Region();
 
-	return d;
+	double max = std::numeric_limits<double>::min();
+	for (int i=0; i<4; i++) {
+		this->getEdge(i,edge1);
+		double min = std::numeric_limits<double>::max();
+		for (int j=0; j<4; j++) {
+			this->getEdge(j,edge2);
+			std::min(min,edge1.getMaximumDistanceSq(edge2));
+		}
+		std::max(max,min);
+	}
+
+	return std::sqrt(max);
 }
 
 double Region::getHausDistUB(const Point& s) const
 {
-	double d = 0;
+	Point sw = Point(this->m_pLow, 2);
+	Point ne = Point(this->m_pHigh, 2);
 
-	return d;
+	double coor[2];
+	coor[0] = this->m_pHigh[0];
+	coor[1] = this->m_pLow[1];
+	Point se = Point(coor, 2);
+
+	coor[0] = this->m_pLow[0];
+	coor[1] = this->m_pHigh[1];
+	Point nw = Point(coor, 2);
+
+	double dSq = s.getDistanceSq(sw);
+	dSq = std::max(dSq,s.getDistanceSq(ne));
+	dSq = std::max(dSq,s.getDistanceSq(se));
+	dSq = std::max(dSq,s.getDistanceSq(nw));
+
+	return std::sqrt(dSq);
 }
+
+/*
+ * Auxilary methods
+ *
+ *
+ */
+
+double Region::getMinimumDistanceSq(const IShape& s) const
+{
+	const Region* pr = dynamic_cast<const Region*>(&s);
+	if (pr != 0) return getMinimumDistanceSq(*pr);
+
+	const Point* ppt = dynamic_cast<const Point*>(&s);
+	if (ppt != 0) return getMinimumDistanceSq(*ppt);
+
+	throw Tools::IllegalStateException(
+		"Region::getHausDistUB: Not implemented yet!"
+	);
+}
+
+
+double Region::getMinimumDistanceSq(const Region& r) const
+{
+	if (m_dimension != r.m_dimension)
+		throw Tools::IllegalArgumentException(
+			"Region::getMinimumDistance: Regions have different number of dimensions."
+		);
+
+	double ret = 0.0;
+
+	for (uint32_t i = 0; i < m_dimension; ++i)
+	{
+		double x = 0.0;
+
+		if (r.m_pHigh[i] < m_pLow[i])
+		{
+			x = std::abs(r.m_pHigh[i] - m_pLow[i]);
+		}
+		else if (m_pHigh[i] < r.m_pLow[i])
+		{
+			x = std::abs(r.m_pLow[i] - m_pHigh[i]);
+		}
+
+		ret += x * x;
+	}
+
+	return ret;
+}
+
+double Region::getMinimumDistanceSq(const Point& p) const
+{
+	if (m_dimension != p.m_dimension)
+		throw Tools::IllegalArgumentException(
+			"Region::getMinimumDistance: Point has different number of dimensions."
+		);
+
+	double ret = 0.0;
+
+	for (uint32_t i = 0; i < m_dimension; ++i)
+	{
+		if (p.getCoordinate(i) < m_pLow[i])
+		{
+			ret += std::pow(m_pLow[i] - p.getCoordinate(i), 2.0);
+		}
+		else if (p.getCoordinate(i) > m_pHigh[i])
+		{
+			ret += std::pow(p.getCoordinate(i) - m_pHigh[i], 2.0);
+		}
+	}
+
+	return ret;
+}
+
+
+double Region::getMaximumDistanceSq(const Region& r) const
+{
+	if (m_dimension != r.m_dimension)
+		throw Tools::IllegalArgumentException(
+			"Region::getMinimumDistance: Regions have different number of dimensions."
+		);
+
+	double ret = 0.0;
+
+	for (uint32_t i = 0; i < m_dimension; ++i)
+	{
+		double diff =
+			std::max(
+				std::abs(this->m_pLow[0] - r.m_pHigh[0]),
+				std::abs(this->m_pHigh[0] - r.m_pLow[0])
+			);
+
+		ret += diff * diff;
+	}
+
+	return ret;
+
+}
+
+
+
+void Region::getEdge(int edgeId, Region& edge) const
+{
+	if (this->m_dimension != 2) {
+		throw Tools::NotSupportedException(
+			"Region::getEdge: #dimensions not supported"
+		);
+	}
+
+	switch (edgeId) {
+		case (0): // South Edge sw->se
+			edge.m_pLow[1] = m_pLow[1]; // South
+			edge.m_pLow[0] = m_pLow[0]; // West
+
+			edge.m_pHigh[1] = m_pLow[1]; // South
+			edge.m_pHigh[0] = m_pHigh[0]; // East
+			break;
+
+
+		case (1): // East Edge se->ne
+			edge.m_pLow[1] = m_pLow[1]; // South
+			edge.m_pLow[0] = m_pHigh[0]; // East
+
+			edge.m_pHigh[1] = m_pHigh[1]; // North
+			edge.m_pHigh[0] = m_pHigh[0]; // East
+			break;
+
+
+		case (2): // North Edge nw->ne
+			edge.m_pLow[1] = m_pHigh[1]; // North
+			edge.m_pLow[0] = m_pLow[0]; // West
+
+			edge.m_pHigh[1] = m_pHigh[1]; // North
+			edge.m_pHigh[0] = m_pHigh[0]; // East
+			break;
+
+
+		default: // West Edge sw->nw
+			edge.m_pLow[1] = m_pLow[1]; // South
+			edge.m_pLow[0] = m_pLow[0]; // West
+
+			edge.m_pHigh[1] = m_pHigh[1]; // North
+			edge.m_pHigh[0] = m_pLow[0]; // West
+			break;
+	}
+}
+
+
 
