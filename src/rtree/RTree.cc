@@ -552,6 +552,7 @@ void SpatialIndex::RTree::RTree::nearestNeighborQuery(uint32_t k, const IShape& 
 				++count;
 				knearest = pFirst->m_minDist;
         v.setDistance(knearest);
+        m_point_id = pFirst->m_pEntry->getIdentifier();
 				delete pFirst->m_pEntry;
 			}
 
@@ -585,7 +586,7 @@ void SpatialIndex::RTree::RTree::nearestNeighborQuery(uint32_t k, const IShape& 
 	nearestNeighborQuery(k, query, v, nnc);
 }
 
-double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, IVisitor& v)
+double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, uint64_t& id1, uint64_t& id2, int mode, IVisitor& v)
 {
 #ifdef HAVE_PTHREAD_H
 	Tools::SharedLock lock(&m_rwLock);
@@ -614,6 +615,8 @@ double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, IVisitor& v)
           query.nearestNeighborQuery(1, p, v);
           if (v.getDistance() > hausdorff) {
             hausdorff = v.getDistance();
+            id1 = n->m_pIdentifier[cChild];
+            id2 = query.m_point_id;
           }
         }
         else {
@@ -635,7 +638,6 @@ double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, IVisitor& v)
 		throw;
 	}
 }
-
 void SpatialIndex::RTree::RTree::selfJoinQuery(const IShape& query, IVisitor& v)
 {
 	if (query.getDimension() != m_dimension)

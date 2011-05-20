@@ -397,7 +397,7 @@ void SpatialIndex::TPRTree::TPRTree::nearestNeighborQuery(uint32_t k, const ISha
 	nearestNeighborQuery(k, query, v, nnc);
 }
 
-double SpatialIndex::TPRTree::TPRTree::hausdorff(ISpatialIndex& query, IVisitor& v)
+double SpatialIndex::TPRTree::TPRTree::hausdorff(ISpatialIndex& query, uint64_t& id1, uint64_t& id2, int mode, IVisitor& v)
 {
   //throw Tools::IllegalArgumentException("MDA: Got Here!");
 }

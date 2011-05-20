@@ -542,38 +542,25 @@ SIDX_C_DLL RTError Index_NearestNeighbors_obj(IndexH index,
 
 // Added by MDA
 SIDX_C_DLL double Index_Hausdorff(IndexH index, 
-                                  IndexH index2)
+                                  IndexH index2,
+                                  uint64_t* id1,
+                                  uint64_t* id2,
+                                  int mode)
 {
 	VALIDATE_POINTER1(index, "Index_Hausdorff", RT_Failure);	 
   VALIDATE_POINTER1(index2, "Index_Hausdorff", RT_Failure);
 	Index* idx = static_cast<Index*>(index);
 	Index* idx2 = static_cast<Index*>(index2);
 
-	ObjVisitor* visitor = new ObjVisitor;
+	IdVisitor* visitor = new IdVisitor;
 	try {	 
-		//idx->index().nearestNeighborQuery(	*nResults,
-		//									SpatialIndex::Region(pdMin, pdMax, nDimension), 
-		//									*visitor);
-
-				
-		//*items = (SpatialIndex::IData**) malloc (visitor->GetResultCount() * sizeof(Item*));
-		
-		//std::vector<SpatialIndex::IData*> results = visitor->GetResults();
-		//*nResults = results.size();
-		
-		// copy the Items into the newly allocated item array
-		// we need to make sure to copy the actual Item instead 
-		// of just the pointers, as the visitor will nuke them 
-		// upon ~
-		//for (uint32_t i=0; i < visitor->GetResultCount(); ++i)
-		//{
-		//	SpatialIndex::IData* result = results[i];
-		//	(*items)[i] =  dynamic_cast<SpatialIndex::IData*>(result->clone());
-
-		//}
-		
-    return idx->index().hausdorff(idx2->index(), *visitor);
+    double h = idx->index().hausdorff(idx2->index(), 
+                                      *id1,
+                                      *id2,
+                                      mode,
+                                      *visitor);
 		delete visitor;
+    return h;
 
 	} catch (Tools::Exception& e)
 	{

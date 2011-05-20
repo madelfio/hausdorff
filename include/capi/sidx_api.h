@@ -94,7 +94,10 @@ SIDX_DLL RTError Index_NearestNeighbors_id( IndexH index,
 											uint64_t* nResults);
 
 SIDX_DLL double Index_Hausdorff(IndexH index,
-                                IndexH index2);
+                                IndexH index2,
+                                uint64_t& id1,
+                                uint64_t& id2,
+                                int mode);
 
 SIDX_DLL RTError Index_GetBounds(	IndexH index,
 									double** ppdMin,
