@@ -402,6 +402,10 @@ double SpatialIndex::TPRTree::TPRTree::hausdorff(ISpatialIndex& query, uint64_t&
   //throw Tools::IllegalArgumentException("MDA: Got Here!");
 }
 
+void SpatialIndex::TPRTree::TPRTree::selectMBRs(const int num) {
+
+}
+
 void SpatialIndex::TPRTree::TPRTree::selfJoinQuery(const IShape& query, IVisitor& v)
 {
 	throw Tools::IllegalStateException("selfJoinQuery: not impelmented yet.");

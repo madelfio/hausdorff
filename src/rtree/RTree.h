@@ -78,6 +78,9 @@ namespace SpatialIndex
 			virtual bool isIndexValid();
 			virtual void getStatistics(IStatistics** out) const;
 
+			double hausdorff(ISpatialIndex& query, uint64_t& id1, uint64_t& id2, IVisitor& v);
+			virtual void selectMBRs(const int numMBRs);
+
 		private:
 			void initNew(Tools::PropertySet&);
 			void initOld(Tools::PropertySet& ps);
@@ -94,6 +97,9 @@ namespace SpatialIndex
 
 			void rangeQuery(RangeQueryType type, const IShape& query, IVisitor& v);
 			void selfJoinQuery(id_type id1, id_type id2, const Region& r, IVisitor& vis);
+
+
+
 
 			IStorageManager* m_pStorageManager;
 
@@ -138,6 +144,8 @@ namespace SpatialIndex
 			std::vector<Tools::SmartPointer<ICommand> > m_writeNodeCommands;
 			std::vector<Tools::SmartPointer<ICommand> > m_readNodeCommands;
 			std::vector<Tools::SmartPointer<ICommand> > m_deleteNodeCommands;
+
+			std::vector<const IShape*> m_vec_pMBR;
 
 #ifdef HAVE_PTHREAD_H
 			pthread_rwlock_t m_rwLock;

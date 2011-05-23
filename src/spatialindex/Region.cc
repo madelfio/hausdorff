@@ -33,6 +33,11 @@ Region::Region()
 {
 }
 
+Region::Region(uint32_t d)
+{
+	initialize(d);
+}
+
 Region::Region(const double* pLow, const double* pHigh, uint32_t dimension)
 {
 	initialize(pLow, pHigh, dimension);
@@ -88,6 +93,23 @@ void Region::initialize(const double* pLow, const double* pHigh, uint32_t dimens
 	memcpy(m_pLow, pLow, m_dimension * sizeof(double));
 	memcpy(m_pHigh, pHigh, m_dimension * sizeof(double));
 }
+
+void Region::initialize(uint32_t dimension)
+{
+	m_dimension = dimension;
+
+	try
+	{
+		m_pLow = new double[m_dimension];
+		m_pHigh = new double[m_dimension];
+	}
+	catch (...)
+	{
+		delete[] m_pLow;
+		throw;
+	}
+}
+
 
 Region::~Region()
 {
@@ -570,12 +592,16 @@ double Region::getHausDistLB(const IShape& s) const
 		);
 	}
 
-	Region edge1 = Region();
-
+	Region edge1 = Region(2);
+	Region r = Region(2);
+	s.getMBR(r);
+	//std::cout << "s: " << r.m_pLow[0] << " " << r.m_pLow[1] << " " << r.m_pHigh[0] << " " << r.m_pHigh[1] << std::endl;
 	double max = std::numeric_limits<double>::min();
 	for (int i=0; i<4; i++) {
 		this->getEdge(i,edge1);
-		std::max(max,edge1.getMinimumDistanceSq(s));
+		max = std::max(max,edge1.getMinimumDistanceSq(s));
+		//std::cout << "e: " << edge1.m_pLow[0] << " " << edge1.m_pLow[1] << " " << edge1.m_pHigh[0] << " " << edge1.m_pHigh[1] << std::endl;
+		//std::cout << "Distance: " << std::sqrt(edge1.getMinimumDistanceSq(s)) << std::endl;
 	}
 
 	return std::sqrt(max);
@@ -583,13 +609,14 @@ double Region::getHausDistLB(const IShape& s) const
 
 double Region::getHausDistLB(const std::vector<const IShape*> vec_pShape) const
 {
+
 	if (this->m_dimension != 2) {
 		throw Tools::NotSupportedException(
 			"Region::getHausDistUB: #dimensions not supported"
 		);
 	}
 
-	Region edge1 = Region();
+	Region edge1 = Region(2);
 
 	double max = std::numeric_limits<double>::min();
 	for (int i=0; i<4; i++) {
@@ -597,10 +624,10 @@ double Region::getHausDistLB(const std::vector<const IShape*> vec_pShape) const
 		double min = std::numeric_limits<double>::max();
 
 		for (int j=0; j<  vec_pShape.size(); j++) {
-			std::min(min,edge1.getMinimumDistanceSq(*(vec_pShape[j])));
+			min = std::min(min,edge1.getMinimumDistanceSq(*(vec_pShape[j])));
 		}
 
-		std::max(max,min);
+		max = std::max(max,min);
 	}
 
 	return std::sqrt(max);
@@ -626,8 +653,8 @@ double Region::getHausDistUB(const IShape& s) const
 
 double Region::getHausDistUB(const Region& s) const
 {
-	Region edge1 = Region();
-	Region edge2 = Region();
+	Region edge1 = Region(2);
+	Region edge2 = Region(2);
 
 	double max = std::numeric_limits<double>::min();
 	for (int i=0; i<4; i++) {
@@ -635,9 +662,9 @@ double Region::getHausDistUB(const Region& s) const
 		double min = std::numeric_limits<double>::max();
 		for (int j=0; j<4; j++) {
 			this->getEdge(j,edge2);
-			std::min(min,edge1.getMaximumDistanceSq(edge2));
+			min = std::min(min,edge1.getMaximumDistanceSq(edge2));
 		}
-		std::max(max,min);
+		max = std::max(max,min);
 	}
 
 	return std::sqrt(max);
@@ -664,6 +691,38 @@ double Region::getHausDistUB(const Point& s) const
 
 	return std::sqrt(dSq);
 }
+
+double Region::getHausDistUB(const std::vector<const IShape*> vec_pShape) const
+{
+
+	if (this->m_dimension != 2) {
+		throw Tools::NotSupportedException(
+			"Region::getHausDistUB: #dimensions not supported"
+		);
+	}
+
+	Region edge1 = Region(2);
+	Region edge2 = Region(2);
+	Region r = Region(2);
+
+	double max = std::numeric_limits<double>::min();
+	for (int i=0; i<4; i++) {
+		this->getEdge(i,edge1);
+		double min = std::numeric_limits<double>::max();
+		for (int j=0; j<  vec_pShape.size(); j++) {
+			vec_pShape[j]->getMBR(r);
+			for (int k=0; k < 4; k++) {
+				r.getEdge(k,edge2);
+				min = std::min(min,edge1.getMaximumDistanceSq(edge2));
+			}
+		}
+
+		max = std::max(max,min);
+	}
+
+	return std::sqrt(max);
+}
+
 
 /*
  * Auxilary methods
@@ -751,8 +810,8 @@ double Region::getMaximumDistanceSq(const Region& r) const
 	{
 		double diff =
 			std::max(
-				std::abs(this->m_pLow[0] - r.m_pHigh[0]),
-				std::abs(this->m_pHigh[0] - r.m_pLow[0])
+				std::abs(this->m_pLow[i] - r.m_pHigh[i]),
+				std::abs(this->m_pHigh[i] - r.m_pLow[i])
 			);
 
 		ret += diff * diff;

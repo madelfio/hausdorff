@@ -27,6 +27,7 @@ namespace SpatialIndex
 	{
 	public:
 		Region();
+		Region(uint32_t dimension);
 		Region(const double* pLow, const double* pHigh, uint32_t dimension);
 		Region(const Point& low, const Point& high);
 		Region(const Region& in);
@@ -89,6 +90,8 @@ namespace SpatialIndex
 		double getHausDistUB(const IShape& in) const;
 		double getHausDistUB(const Region& in) const;
 		double getHausDistUB(const Point& in) const;
+		double getHausDistUB(const std::vector<const IShape*> vec_pShape) const;
+
 
 		double getMinimumDistanceSq(const IShape& in) const;
 		double getMinimumDistanceSq(const Region& in) const;
@@ -99,6 +102,7 @@ namespace SpatialIndex
 
 	private:
 		void initialize(const double* pLow, const double* pHigh, uint32_t dimension);
+		void initialize(uint32_t dimension);
 
 	public:
 		uint32_t m_dimension;
