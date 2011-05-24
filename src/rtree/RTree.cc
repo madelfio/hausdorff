@@ -614,8 +614,8 @@ double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, uint64_t& id1
 		NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
 		retDist = root1->m_nodeMBR.getHausDistLB(root2->m_nodeMBR);
 	} else if (mode==2) {
-		this->selectMBRs(15);
-		queryRTreePtr->selectMBRs(15);
+		this->selectMBRs(25);
+		queryRTreePtr->selectMBRs(25);
 		double max = std::numeric_limits<double>::min();
 
 		Region r = Region(2);
@@ -761,18 +761,26 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 
 
 	NodePtr root = readNode(this->m_rootID);
-	for (int i=0; i<root->getChildrenCount(); i++) {
-		double area = root->m_ptrMBR[i]->getArea();
-		Data* e = new Data(root->m_pDataLength[i],
-				root->m_pData[i],
-				*(root->m_ptrMBR[i]),
-				root->m_pIdentifier[i]);
 
-		NNEntry *pEntry = new NNEntry(root->m_pIdentifier[i], e, -area);
-		queue.push(pEntry);
+	if (root->m_level == 0) {
+		IShape *pShape;
+		root->getShape(&pShape);
+		m_vec_pMBR.push_back(pShape);
+		//std::cout << "root is leaf" << std::endl;
+		return;
+	} else {
+		for (int i=0; i<root->getChildrenCount(); i++) {
+			double area = root->m_ptrMBR[i]->getArea();
+			Data* e = new Data(root->m_pDataLength[i],
+					root->m_pData[i],
+					*(root->m_ptrMBR[i]),
+					root->m_pIdentifier[i]);
+
+			NNEntry *pEntry = new NNEntry(root->m_pIdentifier[i], e, -area);
+			queue.push(pEntry);
+		}
 	}
 
-	//std::cout << queue.size() << std::endl;
 	uint32_t count = 0;
 	double key = 0.0;
 
