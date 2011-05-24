@@ -614,6 +614,17 @@ double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, uint64_t& id1
 		NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
 		retDist = root1->m_nodeMBR.getHausDistLB(root2->m_nodeMBR);
 	} else if (mode==2) {
+		this->selectMBRs(15);
+		queryRTreePtr->selectMBRs(15);
+		double max = std::numeric_limits<double>::min();
+
+		Region r = Region(2);
+		for (int i=0; i<this->m_vec_pMBR.size(); i++) {
+			this->m_vec_pMBR[i]->getMBR(r);
+			max = std::max(max, r.getHausDistLB(queryRTreePtr->m_vec_pMBR));
+		}
+
+		/*
 		std::vector<const IShape*> vec_pShape = std::vector<const IShape*>();
 		NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
 		for (int i=0; i<root2->getChildrenCount(); i++) {
@@ -641,6 +652,7 @@ double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, uint64_t& id1
 		for (int i=0; i<vec_pShape.size(); i++) {
 			delete vec_pShape.at(i);
 		}
+		*/
 
 		retDist = max;
 	} else if (mode==3) {
@@ -760,7 +772,7 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 		queue.push(pEntry);
 	}
 
-	std::cout << queue.size() << std::endl;
+	//std::cout << queue.size() << std::endl;
 	uint32_t count = 0;
 	double key = 0.0;
 
@@ -772,7 +784,7 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 		queue.pop();
 		NodePtr n = readNode(pFirst->m_id);
 
-		std::cout << "===== Point A " << n->m_level << std::endl;
+		//std::cout << "===== Point A " << n->m_level << std::endl;
 
 		if (n->m_level > 0) {
 
@@ -788,14 +800,14 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 				queue.push(pEntry);
 
 			}
-			std::cout << "===== Point B " << std::endl;
+			//std::cout << "===== Point B " << std::endl;
 		} else {
 			IShape *pShape;
 			n->getShape(&pShape);
 			m_vec_pMBR.push_back(pShape);
 		}
 
-		std::cout << "===== Point C" << std::endl;
+		//std::cout << "===== Point C" << std::endl;
 		delete pFirst;
 	}
 
@@ -813,7 +825,7 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 	}
 
 
-	std::cout << m_vec_pMBR.size() << " MBRs selected " << std::endl;
+	//std::cout << m_vec_pMBR.size() << " MBRs selected " << std::endl;
 
 }
 
