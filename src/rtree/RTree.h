@@ -145,7 +145,7 @@ namespace SpatialIndex
 			std::vector<Tools::SmartPointer<ICommand> > m_readNodeCommands;
 			std::vector<Tools::SmartPointer<ICommand> > m_deleteNodeCommands;
 
-			std::vector<const IShape*> m_vec_pMBR;
+			std::vector<const Region*> m_vec_pMBR;
 
 #ifdef HAVE_PTHREAD_H
 			pthread_rwlock_t m_rwLock;

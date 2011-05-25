@@ -598,7 +598,6 @@ void SpatialIndex::RTree::RTree::nearestNeighborQuery(uint32_t k, const IShape& 
  *  Mode 1: Lower bound computed from Root MBRs of the object and the query rtree.
  *  Mode 2: Lower bound computed from immediate children of the roots.
  *  Mode 3: Just Mindist.
- *  Mode 4: Like Mode 2 but show the upper bound too.
  */
 
 double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, uint64_t& id1, uint64_t& id2, int mode, IVisitor& v)
@@ -614,82 +613,23 @@ double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, uint64_t& id1
 		NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
 		retDist = root1->m_nodeMBR.getHausDistLB(root2->m_nodeMBR);
 	} else if (mode==2) {
-		this->selectMBRs(25);
-		queryRTreePtr->selectMBRs(25);
+		int num_mbrs = 40;
+		this->selectMBRs(40);
+		queryRTreePtr->selectMBRs(40);
 		double max = std::numeric_limits<double>::min();
 
 		Region r = Region(2);
-		for (int i=0; i<this->m_vec_pMBR.size(); i++) {
+		//for (int i=0; i<this->m_vec_pMBR.size(); i++) {
+		for (int i=this->m_vec_pMBR.size()-1; i>=0; i--) {
 			this->m_vec_pMBR[i]->getMBR(r);
-			max = std::max(max, r.getHausDistLB(queryRTreePtr->m_vec_pMBR));
+			max = std::max(max, r.getHausDistLB(queryRTreePtr->m_vec_pMBR,max));
 		}
-
-		/*
-		std::vector<const IShape*> vec_pShape = std::vector<const IShape*>();
-		NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
-		for (int i=0; i<root2->getChildrenCount(); i++) {
-			IShape *pShape;
-			root2->getChildShape(i, &pShape);
-			vec_pShape.push_back(pShape);
-		}
-
-
-		Region r = Region(2);
-		NodePtr root1 = readNode(this->m_rootID);
-
-		//std::cout << "#children " << root1->getChildrenCount() << " " << root2->getChildrenCount() << std::endl;
-		double max = std::numeric_limits<double>::min();
-		for (int j=0; j<root1->getChildrenCount(); j++) {
-			IShape *pShape;
-			root1->getChildShape(j, &pShape);
-
-			pShape->getMBR(r);
-			max = std::max(max, r.getHausDistLB(vec_pShape));
-			//std::cout << max/1000 << std::endl;
-			delete pShape;
-		}
-
-		for (int i=0; i<vec_pShape.size(); i++) {
-			delete vec_pShape.at(i);
-		}
-		*/
 
 		retDist = max;
 	} else if (mode==3) {
 		NodePtr root1 = readNode(this->m_rootID);
 		NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
 		retDist = root1->m_nodeMBR.getMinimumDistance(root2->m_nodeMBR);
-	} else if (mode==4) {
-		NodePtr root1 = readNode(this->m_rootID);
-		NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
-		std::vector<const IShape*> vec_pShape = std::vector<const IShape*>();
-		for (int i=0; i<root2->getChildrenCount(); i++) {
-			IShape *pShape;
-			root2->getChildShape(i, &pShape);
-			vec_pShape.push_back(pShape);
-		}
-
-		Region r = Region(2);
-		double lb = root1->m_nodeMBR.getHausDistLB(root2->m_nodeMBR);
-		double ub = root1->m_nodeMBR.getHausDistUB(root2->m_nodeMBR);
-		std::cout << "[root_lb=" << lb/1000 << ", root_ub=" << ub/1000 << "] ";
-		std::cout << " #children " << root1->getChildrenCount() << " " << root2->getChildrenCount() << std::endl;
-		double max = std::numeric_limits<double>::min();
-		for (int j=0; j<root1->getChildrenCount(); j++) {
-			IShape *pShape;
-			root1->getChildShape(j, &pShape);
-
-			pShape->getMBR(r);
-			lb = r.getHausDistLB(vec_pShape);
-			ub = r.getHausDistUB(vec_pShape);
-			max = std::max(max, lb);
-			std::cout << "[lb=" << lb/1000 << ", ub=" << ub/1000 << "] ";
-			delete pShape;
-		}
-		std::cout << std::endl << std::endl;
-		for (int i=0; i<vec_pShape.size(); i++) {
-			delete vec_pShape.at(i);
-		}
 	}
 
 	return retDist;
@@ -757,16 +697,26 @@ double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, uint64_t& id1
 
 void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 	std::priority_queue<NNEntry*, std::vector<NNEntry*>, NNEntry::ascending> queue;
-	m_vec_pMBR = std::vector<const IShape*>();
+
+	if (num == m_vec_pMBR.size()) return;
+
+	for (int i=0; i<m_vec_pMBR.size(); i++) {
+		delete m_vec_pMBR.at(i);
+	}
+
+
+	m_vec_pMBR.clear();
 
 
 	NodePtr root = readNode(this->m_rootID);
 
 	if (root->m_level == 0) {
 		IShape *pShape;
+		Region *pMBR = new Region(2);
 		root->getShape(&pShape);
-		m_vec_pMBR.push_back(pShape);
-		//std::cout << "root is leaf" << std::endl;
+		pShape->getMBR(*pMBR);
+		m_vec_pMBR.push_back(pMBR);
+		delete pShape;
 		return;
 	} else {
 		for (int i=0; i<root->getChildrenCount(); i++) {
@@ -787,13 +737,9 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 	int counter = 0;
 	while (! queue.empty() && queue.size() + m_vec_pMBR.size() < num)
 	{
-
 		NNEntry* pFirst = queue.top();
 		queue.pop();
 		NodePtr n = readNode(pFirst->m_id);
-
-		//std::cout << "===== Point A " << n->m_level << std::endl;
-
 		if (n->m_level > 0) {
 
 			for (uint32_t cChild = 0; cChild < n->m_children; ++cChild)
@@ -808,17 +754,18 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 				queue.push(pEntry);
 
 			}
-			//std::cout << "===== Point B " << std::endl;
 		} else {
+
 			IShape *pShape;
 			n->getShape(&pShape);
-			m_vec_pMBR.push_back(pShape);
+			Region *pMBR = new Region(2);
+			pShape->getMBR(*pMBR);
+			m_vec_pMBR.push_back(pMBR);
+			delete pShape;
 		}
 
-		//std::cout << "===== Point C" << std::endl;
 		delete pFirst;
 	}
-
 
 	while (! queue.empty())
 	{
@@ -826,15 +773,14 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 		if (e->m_pEntry != 0) {
 			IShape *pShape;
 			e->m_pEntry->getShape(&pShape);
-			m_vec_pMBR.push_back(pShape);
+			Region *pMBR = new Region(2);
+			pShape->getMBR(*pMBR);
+			m_vec_pMBR.push_back(pMBR);
+			delete pShape;
 			delete e->m_pEntry;
 		}
 		delete e;
 	}
-
-
-	//std::cout << m_vec_pMBR.size() << " MBRs selected " << std::endl;
-
 }
 
 void SpatialIndex::RTree::RTree::selfJoinQuery(const IShape& query, IVisitor& v)

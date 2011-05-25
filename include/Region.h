@@ -85,7 +85,7 @@ namespace SpatialIndex
 
 
 		double getHausDistLB(const IShape& in) const;
-		double getHausDistLB(const std::vector<const IShape*> vec_pShape) const;
+		double getHausDistLB(const std::vector<const Region*> vec_pMBR, double max) const;
 
 		double getHausDistUB(const IShape& in) const;
 		double getHausDistUB(const Region& in) const;
