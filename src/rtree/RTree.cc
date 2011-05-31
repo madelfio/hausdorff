@@ -625,11 +625,11 @@ double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, uint64_t& id1
 			max = std::max(max, r.getHausDistLB(queryRTreePtr->m_vec_pMBR,max));
 		}
 
-		for (int i=0; i<m_vec_pMBR.size(); i++) {
+		for (int i=0; i<this->m_vec_pMBR.size(); i++) {
 			delete this->m_vec_pMBR.at(i);
 		}
 
-		for (int i=0; i<m_vec_pMBR.size(); i++) {
+		for (int i=0; i<queryRTreePtr->m_vec_pMBR.size(); i++) {
 			delete queryRTreePtr->m_vec_pMBR.at(i);
 		}
 
