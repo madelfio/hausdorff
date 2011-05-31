@@ -80,6 +80,7 @@ namespace SpatialIndex
 
 			double hausdorff(ISpatialIndex& query, uint64_t& id1, uint64_t& id2, IVisitor& v);
 			virtual void selectMBRs(const int numMBRs);
+			virtual void clearMBRs();
 
 		private:
 			void initNew(Tools::PropertySet&);

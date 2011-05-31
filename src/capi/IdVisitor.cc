@@ -29,6 +29,7 @@
 
 IdVisitor::IdVisitor(): nResults(0)
 {
+	this->m_traversalCost = 0;
 }
 
 IdVisitor::~IdVisitor()
@@ -36,9 +37,14 @@ IdVisitor::~IdVisitor()
 
 }
 
+int IdVisitor::getTraversalCost()
+{
+	return this->m_traversalCost++;
+}
+
 void IdVisitor::visitNode(const SpatialIndex::INode& n)
 {
-
+	this->m_traversalCost++;
 }
 
 void IdVisitor::visitData(const SpatialIndex::IData& d)

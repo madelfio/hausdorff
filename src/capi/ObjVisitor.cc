@@ -29,6 +29,7 @@
 
 ObjVisitor::ObjVisitor(): nResults(0)
 {
+	m_traversalCost=0;
 }
 
 ObjVisitor::~ObjVisitor()
@@ -42,6 +43,7 @@ ObjVisitor::~ObjVisitor()
 
 void ObjVisitor::visitNode(const SpatialIndex::INode& n)
 {
+	this->m_traversalCost++;
 }
 
 void ObjVisitor::visitData(const SpatialIndex::IData& d)

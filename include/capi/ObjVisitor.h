@@ -33,6 +33,7 @@ private:
     std::vector<SpatialIndex::IData*> m_vector;
     uint64_t nResults;
     double m_distance;
+    double m_traversalCost;
 
 public:
 
