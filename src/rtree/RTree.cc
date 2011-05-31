@@ -614,8 +614,8 @@ double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, uint64_t& id1
 		retDist = root1->m_nodeMBR.getHausDistLB(root2->m_nodeMBR);
 	} else if (mode==2) {
 		int num_mbrs = 40;
-		this->selectMBRs(40);
-		queryRTreePtr->selectMBRs(40);
+		this->selectMBRs(num_mbrs);
+		queryRTreePtr->selectMBRs(num_mbrs);
 		double max = std::numeric_limits<double>::min();
 
 		Region r = Region(2);
@@ -624,6 +624,9 @@ double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, uint64_t& id1
 			this->m_vec_pMBR[i]->getMBR(r);
 			max = std::max(max, r.getHausDistLB(queryRTreePtr->m_vec_pMBR,max));
 		}
+
+		this->m_vec_pMBR.clear();
+		queryRTreePtr->m_vec_pMBR.clear();
 
 		retDist = max;
 	} else if (mode==3) {
@@ -712,11 +715,12 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 
 	if (root->m_level == 0) {
 		IShape *pShape;
-		Region *pMBR = new Region(2);
 		root->getShape(&pShape);
+		Region *pMBR = new Region(2);
 		pShape->getMBR(*pMBR);
 		m_vec_pMBR.push_back(pMBR);
 		delete pShape;
+
 		return;
 	} else {
 		for (int i=0; i<root->getChildrenCount(); i++) {
@@ -752,10 +756,8 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 
 				NNEntry *pEntry = new NNEntry(n->m_pIdentifier[cChild], e, -area);
 				queue.push(pEntry);
-
 			}
 		} else {
-
 			IShape *pShape;
 			n->getShape(&pShape);
 			Region *pMBR = new Region(2);
