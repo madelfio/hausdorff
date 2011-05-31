@@ -32,24 +32,24 @@
 static std::stack<Error> errors;
 
 #define VALIDATE_POINTER0(ptr, func) \
-   do { if( NULL == ptr ) { \
-		RTError const ret = RT_Failure; \
-		std::ostringstream msg; \
-		msg << "Pointer \'" << #ptr << "\' is NULL in \'" << (func) <<"\'."; \
-		std::string message(msg.str()); \
-		Error_PushError( ret, message.c_str(), (func)); \
-		return; \
-   }} while(0)
+		do { if( NULL == ptr ) { \
+			RTError const ret = RT_Failure; \
+			std::ostringstream msg; \
+			msg << "Pointer \'" << #ptr << "\' is NULL in \'" << (func) <<"\'."; \
+			std::string message(msg.str()); \
+			Error_PushError( ret, message.c_str(), (func)); \
+			return; \
+		}} while(0)
 
 #define VALIDATE_POINTER1(ptr, func, rc) \
-   do { if( NULL == ptr ) { \
-		RTError const ret = RT_Failure; \
-		std::ostringstream msg; \
-		msg << "Pointer \'" << #ptr << "\' is NULL in \'" << (func) <<"\'."; \
-		std::string message(msg.str()); \
-		Error_PushError( ret, message.c_str(), (func)); \
-		return (rc); \
-   }} while(0)
+		do { if( NULL == ptr ) { \
+			RTError const ret = RT_Failure; \
+			std::ostringstream msg; \
+			msg << "Pointer \'" << #ptr << "\' is NULL in \'" << (func) <<"\'."; \
+			std::string message(msg.str()); \
+			Error_PushError( ret, message.c_str(), (func)); \
+			return (rc); \
+		}} while(0)
 
 IDX_C_START
 
@@ -103,56 +103,56 @@ SIDX_C_DLL IndexH Index_Create(IndexPropertyH hProp)
 {
 	VALIDATE_POINTER1(hProp, "Index_Create", NULL);	  
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
-	
+
 	try { 
 		return (IndexH) new Index(*prop); 
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"Index_Create");
+				e.what().c_str(),
+				"Index_Create");
 		return NULL;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"Index_Create");
+				e.what(),
+				"Index_Create");
 		return NULL;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"Index_Create");
+				"Unknown Error",
+				"Index_Create");
 		return NULL;		
 	}
 	return NULL;
 }
 
 SIDX_C_DLL IndexH Index_CreateWithStream( IndexPropertyH hProp,
-										int (*readNext)(SpatialIndex::id_type *id, double **pMin, double **pMax, uint32_t *nDimension, const uint8_t **pData, uint32_t *nDataLength)
-									   )
+		int (*readNext)(SpatialIndex::id_type *id, double **pMin, double **pMax, uint32_t *nDimension, const uint8_t **pData, uint32_t *nDataLength)
+)
 {
 	VALIDATE_POINTER1(hProp, "Index_CreateWithStream", NULL);	
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
 
-	
+
 	try { 
 		return (IndexH) new Index(*prop, readNext); 
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"Index_CreateWithStream");
+				e.what().c_str(),
+				"Index_CreateWithStream");
 		return NULL;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"Index_CreateWithStream");
+				e.what(),
+				"Index_CreateWithStream");
 		return NULL;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"Index_CreateWithStream");
+				"Unknown Error",
+				"Index_CreateWithStream");
 		return NULL;		
 	}
 	return NULL;
@@ -166,10 +166,10 @@ SIDX_C_DLL void Index_Destroy(IndexH index)
 }
 
 SIDX_C_DLL RTError Index_DeleteData(  IndexH index, 
-									uint64_t id, 
-									double* pdMin, 
-									double* pdMax, 
-									uint32_t nDimension)
+		uint64_t id,
+		double* pdMin,
+		double* pdMax,
+		uint32_t nDimension)
 {
 	VALIDATE_POINTER1(index, "Index_DeleteData", RT_Failure);	   
 
@@ -181,44 +181,44 @@ SIDX_C_DLL RTError Index_DeleteData(  IndexH index,
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"Index_DeleteData");
+				e.what().c_str(),
+				"Index_DeleteData");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"Index_DeleteData");
+				e.what(),
+				"Index_DeleteData");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"Index_DeleteData");
+				"Unknown Error",
+				"Index_DeleteData");
 		return RT_Failure;		  
 	}
 	return RT_None;
 }
 
 SIDX_C_DLL RTError Index_InsertData(  IndexH index, 
-									uint64_t id, 
-									double* pdMin, 
-									double* pdMax, 
-									uint32_t nDimension,
-									const uint8_t* pData, 
-									uint32_t nDataLength)
+		uint64_t id,
+		double* pdMin,
+		double* pdMax,
+		uint32_t nDimension,
+		const uint8_t* pData,
+		uint32_t nDataLength)
 {
 	VALIDATE_POINTER1(index, "Index_InsertData", RT_Failure);	   
 
 	Index* idx = static_cast<Index*>(index);
-	
+
 	// Test the data and check for the case when minx == maxx, miny == maxy
 	// and minz == maxz.  In that case, we will insert a SpatialIndex::Point 
 	// instead of a SpatialIndex::Region
-	
+
 	bool isPoint = false;
 	SpatialIndex::IShape* shape = 0;
 	double const epsilon = std::numeric_limits<double>::epsilon(); 
-	
+
 	double length(0);
 	for (uint32_t i = 0; i < nDimension; ++i) {
 		double delta = pdMin[i] - pdMax[i];
@@ -236,9 +236,9 @@ SIDX_C_DLL RTError Index_InsertData(  IndexH index,
 	}
 	try {
 		idx->index().insertData(nDataLength, 
-								pData, 
-								*shape, 
-								id);
+				pData,
+				*shape,
+				id);
 
 		delete shape;
 		return RT_None;
@@ -246,21 +246,21 @@ SIDX_C_DLL RTError Index_InsertData(  IndexH index,
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"Index_InsertData");
+				e.what().c_str(),
+				"Index_InsertData");
 		delete shape;
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"Index_InsertData");
+				e.what(),
+				"Index_InsertData");
 		delete shape;
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"Index_InsertData");
+				"Unknown Error",
+				"Index_InsertData");
 		delete shape;
 		return RT_Failure;		  
 	}
@@ -268,23 +268,23 @@ SIDX_C_DLL RTError Index_InsertData(  IndexH index,
 }
 
 SIDX_C_DLL RTError Index_Intersects_obj(  IndexH index, 
-										double* pdMin, 
-										double* pdMax, 
-										uint32_t nDimension, 
-										IndexItemH** items, 
-										uint64_t* nResults)
+		double* pdMin,
+		double* pdMax,
+		uint32_t nDimension,
+		IndexItemH** items,
+		uint64_t* nResults)
 {
 	VALIDATE_POINTER1(index, "Index_Intersects_obj", RT_Failure);	   
 	Index* idx = static_cast<Index*>(index);
 
 	ObjVisitor* visitor = new ObjVisitor;
 	try {	 
-        SpatialIndex::Region* r = new SpatialIndex::Region(pdMin, pdMax, nDimension);
+		SpatialIndex::Region* r = new SpatialIndex::Region(pdMin, pdMax, nDimension);
 		idx->index().intersectsWithQuery(	*r, 
-											*visitor);
+				*visitor);
 
 		*items = (SpatialIndex::IData**) malloc (visitor->GetResultCount() * sizeof(SpatialIndex::IData*));
-		
+
 		std::vector<SpatialIndex::IData*>& results = visitor->GetResults();
 
 		// copy the Items into the newly allocated item array
@@ -298,28 +298,28 @@ SIDX_C_DLL RTError Index_Intersects_obj(  IndexH index,
 
 		}
 		*nResults = visitor->GetResultCount();
-		
-        delete r;
+
+		delete r;
 		delete visitor;
 
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"Index_Intersects_obj");
+				e.what().c_str(),
+				"Index_Intersects_obj");
 		delete visitor;
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"Index_Intersects_obj");
+				e.what(),
+				"Index_Intersects_obj");
 		delete visitor;
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"Index_Intersects_obj");
+				"Unknown Error",
+				"Index_Intersects_obj");
 		delete visitor;
 		return RT_Failure;		  
 	}
@@ -327,25 +327,25 @@ SIDX_C_DLL RTError Index_Intersects_obj(  IndexH index,
 }
 
 SIDX_C_DLL RTError Index_Intersects_id(	  IndexH index, 
-										double* pdMin, 
-										double* pdMax, 
-										uint32_t nDimension, 
-										uint64_t** ids, 
-										uint64_t* nResults)
+		double* pdMin,
+		double* pdMax,
+		uint32_t nDimension,
+		uint64_t** ids,
+		uint64_t* nResults)
 {
 	VALIDATE_POINTER1(index, "Index_Intersects_id", RT_Failure);	  
 	Index* idx = static_cast<Index*>(index);
 
 	IdVisitor* visitor = new IdVisitor;
 	try {
-        SpatialIndex::Region* r = new SpatialIndex::Region(pdMin, pdMax, nDimension);
+		SpatialIndex::Region* r = new SpatialIndex::Region(pdMin, pdMax, nDimension);
 		idx->index().intersectsWithQuery(	*r, 
-											*visitor);
+				*visitor);
 
 		*nResults = visitor->GetResultCount();
 
 		*ids = (uint64_t*) malloc (*nResults * sizeof(uint64_t));
-		
+
 		std::vector<uint64_t>& results = visitor->GetResults();
 
 		for (uint32_t i=0; i < *nResults; ++i)
@@ -354,27 +354,27 @@ SIDX_C_DLL RTError Index_Intersects_id(	  IndexH index,
 
 		}
 
-        delete r;
+		delete r;
 		delete visitor;
 
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"Index_Intersects_id");
+				e.what().c_str(),
+				"Index_Intersects_id");
 		delete visitor;
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"Index_Intersects_id");
+				e.what(),
+				"Index_Intersects_id");
 		delete visitor;
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"Index_Intersects_id");
+				"Unknown Error",
+				"Index_Intersects_id");
 		delete visitor;
 		return RT_Failure;		  
 	}
@@ -382,19 +382,19 @@ SIDX_C_DLL RTError Index_Intersects_id(	  IndexH index,
 }
 
 SIDX_C_DLL RTError Index_Intersects_count(	  IndexH index, 
-										double* pdMin, 
-										double* pdMax, 
-										uint32_t nDimension, 
-										uint64_t* nResults)
+		double* pdMin,
+		double* pdMax,
+		uint32_t nDimension,
+		uint64_t* nResults)
 {
 	VALIDATE_POINTER1(index, "Index_Intersects_count", RT_Failure);	  
 	Index* idx = static_cast<Index*>(index);
 
 	CountVisitor* visitor = new CountVisitor;
 	try {
-        SpatialIndex::Region* r = new SpatialIndex::Region(pdMin, pdMax, nDimension);
+		SpatialIndex::Region* r = new SpatialIndex::Region(pdMin, pdMax, nDimension);
 		idx->index().intersectsWithQuery(	*r, 
-											*visitor);
+				*visitor);
 
 		*nResults = visitor->GetResultCount();
 
@@ -404,21 +404,21 @@ SIDX_C_DLL RTError Index_Intersects_count(	  IndexH index,
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"Index_Intersects_count");
+				e.what().c_str(),
+				"Index_Intersects_count");
 		delete visitor;
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"Index_Intersects_count");
+				e.what(),
+				"Index_Intersects_count");
 		delete visitor;
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"Index_Intersects_count");
+				"Unknown Error",
+				"Index_Intersects_count");
 		delete visitor;
 		return RT_Failure;		  
 	}
@@ -426,11 +426,11 @@ SIDX_C_DLL RTError Index_Intersects_count(	  IndexH index,
 }
 
 SIDX_C_DLL RTError Index_NearestNeighbors_id(IndexH index, 
-											double* pdMin, 
-											double* pdMax, 
-											uint32_t nDimension, 
-											uint64_t** ids, 
-											uint64_t* nResults)
+		double* pdMin,
+		double* pdMax,
+		uint32_t nDimension,
+		uint64_t** ids,
+		uint64_t* nResults)
 {
 	VALIDATE_POINTER1(index, "Index_NearestNeighbors_id", RT_Failure);	
 	Index* idx = static_cast<Index*>(index);
@@ -439,42 +439,42 @@ SIDX_C_DLL RTError Index_NearestNeighbors_id(IndexH index,
 
 	try {	 
 		idx->index().nearestNeighborQuery(	*nResults,
-											SpatialIndex::Region(pdMin, pdMax, nDimension), 
-											*visitor);
-		
+				SpatialIndex::Region(pdMin, pdMax, nDimension),
+				*visitor);
+
 		*ids = (uint64_t*) malloc (visitor->GetResultCount() * sizeof(uint64_t));
-		
+
 		std::vector<uint64_t>& results = visitor->GetResults();
 
 		*nResults = results.size();
-		
+
 		for (uint32_t i=0; i < *nResults; ++i)
 		{
 			(*ids)[i] = results[i];
 
 		}
 
-		
+
 		delete visitor;
-		
+
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"Index_NearestNeighbors_id");
+				e.what().c_str(),
+				"Index_NearestNeighbors_id");
 		delete visitor;
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"Index_NearestNeighbors_id");
+				e.what(),
+				"Index_NearestNeighbors_id");
 		delete visitor;
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"Index_NearestNeighbors_id");
+				"Unknown Error",
+				"Index_NearestNeighbors_id");
 		delete visitor;
 		return RT_Failure;		  
 	}
@@ -482,11 +482,11 @@ SIDX_C_DLL RTError Index_NearestNeighbors_id(IndexH index,
 }
 
 SIDX_C_DLL RTError Index_NearestNeighbors_obj(IndexH index, 
-											double* pdMin, 
-											double* pdMax, 
-											uint32_t nDimension, 
-											IndexItemH** items, 
-											uint64_t* nResults)
+		double* pdMin,
+		double* pdMax,
+		uint32_t nDimension,
+		IndexItemH** items,
+		uint64_t* nResults)
 {
 	VALIDATE_POINTER1(index, "Index_NearestNeighbors_obj", RT_Failure);	 
 	Index* idx = static_cast<Index*>(index);
@@ -494,15 +494,15 @@ SIDX_C_DLL RTError Index_NearestNeighbors_obj(IndexH index,
 	ObjVisitor* visitor = new ObjVisitor;
 	try {	 
 		idx->index().nearestNeighborQuery(	*nResults,
-											SpatialIndex::Region(pdMin, pdMax, nDimension), 
-											*visitor);
+				SpatialIndex::Region(pdMin, pdMax, nDimension),
+				*visitor);
 
-				
+
 		*items = (SpatialIndex::IData**) malloc (visitor->GetResultCount() * sizeof(Item*));
-		
+
 		std::vector<SpatialIndex::IData*> results = visitor->GetResults();
 		*nResults = results.size();
-		
+
 		// copy the Items into the newly allocated item array
 		// we need to make sure to copy the actual Item instead 
 		// of just the pointers, as the visitor will nuke them 
@@ -513,27 +513,27 @@ SIDX_C_DLL RTError Index_NearestNeighbors_obj(IndexH index,
 			(*items)[i] =  dynamic_cast<SpatialIndex::IData*>(result->clone());
 
 		}
-		
+
 		delete visitor;
 
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"Index_NearestNeighbors_obj");
+				e.what().c_str(),
+				"Index_NearestNeighbors_obj");
 		delete visitor;
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"Index_NearestNeighbors_obj");
+				e.what(),
+				"Index_NearestNeighbors_obj");
 		delete visitor;
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"Index_NearestNeighbors_obj");
+				"Unknown Error",
+				"Index_NearestNeighbors_obj");
 		delete visitor;
 		return RT_Failure;		  
 	}
@@ -542,97 +542,99 @@ SIDX_C_DLL RTError Index_NearestNeighbors_obj(IndexH index,
 
 // Added by MDA
 SIDX_C_DLL double Index_Hausdorff(IndexH index, 
-                                  IndexH index2,
-                                  uint64_t* id1,
-                                  uint64_t* id2,
-                                  int* traversal_cost,
-                                  int mode)
+		IndexH index2,
+		uint64_t* id1,
+		uint64_t* id2,
+		int* traversal_cost,
+		int mode)
 {
 	VALIDATE_POINTER1(index, "Index_Hausdorff", RT_Failure);	 
-  VALIDATE_POINTER1(index2, "Index_Hausdorff", RT_Failure);
+	VALIDATE_POINTER1(index2, "Index_Hausdorff", RT_Failure);
 	Index* idx = static_cast<Index*>(index);
 	Index* idx2 = static_cast<Index*>(index2);
 
-  IdVisitor* visitor = 0;
-  if (mode == 0) {
-  	IdVisitor* visitor = new IdVisitor;
-  }
-    
+	IdVisitor* visitor = 0;
+	if (mode == 0) {
+		visitor = new IdVisitor;
+	}
+
 	try {	 
-    double h = idx->index().hausdorff(idx2->index(), 
-                                      *id1,
-                                      *id2,
-                                      mode,
-                                      *visitor);
-    if (mode == 0) {
-      *traversal_cost = visitor->getTraversalCost();
-      delete visitor;
-    }
-    return h;
+
+		double h = idx->index().hausdorff(idx2->index(),
+				*id1,
+				*id2,
+				mode,
+				*visitor);
+
+		if (mode == 0) {
+			*traversal_cost = visitor->getTraversalCost();
+			delete visitor;
+		}
+		return h;
 
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"Index_Hausdorff");
-    if (mode == 0) {
-      delete visitor;
-    }
+				e.what().c_str(),
+				"Index_Hausdorff");
+		if (mode == 0) {
+			delete visitor;
+		}
 		return 0;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"Index_Hausdorff");
-    if (mode == 0) {
-      delete visitor;
-    }
+				e.what(),
+				"Index_Hausdorff");
+		if (mode == 0) {
+			delete visitor;
+		}
 		return 0;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"Index_Hausdorff");
-    if (mode == 0) {
-      delete visitor;
-    }
+				"Unknown Error",
+				"Index_Hausdorff");
+		if (mode == 0) {
+			delete visitor;
+		}
 		return 0;		  
 	}
 	return 0;
 }
 
 SIDX_DLL void Index_SelectMBRs(IndexH index,
-                               int numMBRs)
+		int numMBRs)
 {
-  VALIDATE_POINTER0(index, "Index_SelectMBRs");
-  Index* idx = static_cast<Index*>(index);
+	VALIDATE_POINTER0(index, "Index_SelectMBRs");
+	Index* idx = static_cast<Index*>(index);
 
-  try {
-    idx->index().selectMBRs(numMBRs);
-  } catch (...) {
-    Error_PushError(RT_Failure,
-        "Unknown Error",
-        "Index_selectMBRs");
-  }
+	try {
+		idx->index().selectMBRs(numMBRs);
+	} catch (...) {
+		Error_PushError(RT_Failure,
+				"Unknown Error",
+				"Index_selectMBRs");
+	}
 }
 
 SIDX_DLL void Index_ClearMBRs(IndexH index)
 {
-  VALIDATE_POINTER0(index, "Index_ClearMBRs");
-  Index* idx = static_cast<Index*>(index);
+	VALIDATE_POINTER0(index, "Index_ClearMBRs");
+	Index* idx = static_cast<Index*>(index);
 
-  try {
-    idx->index().clearMBRs();
-  } catch (...) {
-    Error_PushError(RT_Failure,
-        "Unknown Error",
-        "Index_ClearMBRs");
-  }
+	try {
+		idx->index().clearMBRs();
+	} catch (...) {
+		Error_PushError(RT_Failure,
+				"Unknown Error",
+				"Index_ClearMBRs");
+	}
 }
 
 SIDX_C_DLL RTError Index_GetBounds(	  IndexH index, 
-									double** ppdMin, 
-									double** ppdMax, 
-									uint32_t* nDimension)
+		double** ppdMin,
+		double** ppdMax,
+		uint32_t* nDimension)
 {
 	VALIDATE_POINTER1(index, "Index_GetBounds", RT_Failure);
 	Index* idx = static_cast<Index*>(index);
@@ -641,44 +643,44 @@ SIDX_C_DLL RTError Index_GetBounds(	  IndexH index,
 
 	try {	 
 		idx->index().queryStrategy( *query);
-		
+
 		const SpatialIndex::Region* bounds = query->GetBounds();
 		if (bounds == 0) { 
 			*nDimension = 0;
 			delete query;
 			return RT_None;
 		}
-		
+
 		*nDimension =bounds->getDimension();
-		
+
 		*ppdMin = (double*) malloc (*nDimension * sizeof(double));
 		*ppdMax = (double*) malloc (*nDimension * sizeof(double));
-		
+
 		for (uint32_t i=0; i< *nDimension; ++i) {
 			(*ppdMin)[i] = bounds->getLow(i);
 			(*ppdMax)[i] = bounds->getHigh(i);
 		}
-		
+
 		delete query;
 
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"Index_GetBounds");
+				e.what().c_str(),
+				"Index_GetBounds");
 		delete query;
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"Index_GetBounds");
+				e.what(),
+				"Index_GetBounds");
 		delete query;
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"Index_GetBounds");
+				"Unknown Error",
+				"Index_GetBounds");
 		delete query;
 		return RT_Failure;		  
 	}
@@ -697,7 +699,7 @@ SIDX_C_DLL IndexPropertyH Index_GetProperties(IndexH index)
 	VALIDATE_POINTER1(index, "Index_GetProperties", 0); 
 	Index* idx = static_cast<Index*>(index);
 	Tools::PropertySet* ps = new Tools::PropertySet;
-	
+
 	idx->index().getIndexProperties(*ps);
 	return (IndexPropertyH)ps;
 }
@@ -720,7 +722,7 @@ SIDX_C_DLL void Index_DestroyObjResults(IndexItemH* results, uint32_t nResults)
 				delete it;
 		}
 	}
-	
+
 	std::free(results);
 }
 
@@ -729,21 +731,21 @@ SIDX_C_DLL void Index_Free(void* results)
 {
 	VALIDATE_POINTER0(results, "Index_Free");
 	if (results != 0)
-	    std::free(results);
+		std::free(results);
 }
 
 SIDX_C_DLL RTError Index_GetLeaves(	IndexH index, 
-									uint32_t* nNumLeafNodes,
-									uint32_t** nLeafSizes, 
-									int64_t** nLeafIDs, 
-									int64_t*** nLeafChildIDs,
-									double*** pppdMin, 
-									double*** pppdMax, 
-									uint32_t* nDimension)
+		uint32_t* nNumLeafNodes,
+		uint32_t** nLeafSizes,
+		int64_t** nLeafIDs,
+		int64_t*** nLeafChildIDs,
+		double*** pppdMin,
+		double*** pppdMax,
+		uint32_t* nDimension)
 {
 	VALIDATE_POINTER1(index, "Index_GetLeaves", RT_Failure);
 	Index* idx = static_cast<Index*>(index);
-	
+
 	std::vector<LeafQueryResult>::const_iterator i;
 	LeafQuery* query = new LeafQuery;
 
@@ -758,34 +760,34 @@ SIDX_C_DLL RTError Index_GetLeaves(	IndexH index,
 	{
 		if (var.m_varType != Tools::VT_ULONG) {
 			Error_PushError(RT_Failure, 
-							"Property Dimension must be Tools::VT_ULONG", 
-							"Index_GetLeaves");
+					"Property Dimension must be Tools::VT_ULONG",
+					"Index_GetLeaves");
 			return RT_Failure;
 		}
 	}
-	
+
 	*nDimension = var.m_val.ulVal;
-		
+
 	try {	 
 		idx->index().queryStrategy( *query);
-		
+
 		const std::vector<LeafQueryResult>& results = query->GetResults();
 
 		*nNumLeafNodes = results.size();
-		
+
 		*nLeafSizes = (uint32_t*) malloc (*nNumLeafNodes * sizeof(uint32_t));
 		*nLeafIDs = (int64_t*) malloc (*nNumLeafNodes * sizeof(int64_t));
 
 		*nLeafChildIDs = (int64_t**) malloc(*nNumLeafNodes * sizeof(int64_t*));
 		*pppdMin = (double**) malloc (*nNumLeafNodes * sizeof(double*));
 		*pppdMax = (double**) malloc (*nNumLeafNodes * sizeof(double*));
-		
+
 		uint32_t k=0;
 		for (i = results.begin(); i != results.end(); ++i)
 		{
 			std::vector<SpatialIndex::id_type> const& ids = (*i).GetIDs();
 			const SpatialIndex::Region* b = (*i).GetBounds();
-			
+
 			(*nLeafIDs)[k] = (*i).getIdentifier();
 			(*nLeafSizes)[k] = ids.size();
 
@@ -803,27 +805,27 @@ SIDX_C_DLL RTError Index_GetLeaves(	IndexH index,
 			++k;
 		}
 
-		
+
 		delete query;
 
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"Index_GetLeaves");
+				e.what().c_str(),
+				"Index_GetLeaves");
 		delete query;
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"Index_GetLeaves");
+				e.what(),
+				"Index_GetLeaves");
 		delete query;
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"Index_GetLeaves");
+				"Unknown Error",
+				"Index_GetLeaves");
 		delete query;
 		return RT_Failure;		  
 	}
@@ -839,23 +841,23 @@ SIDX_C_DLL void IndexItem_Destroy(IndexItemH item)
 }
 
 SIDX_C_DLL RTError IndexItem_GetData( IndexItemH item,
-									uint8_t** data,
-									uint64_t* length)
+		uint8_t** data,
+		uint64_t* length)
 {
 	VALIDATE_POINTER1(item, "IndexItem_GetData", RT_Failure);  
 	SpatialIndex::IData* it = static_cast<SpatialIndex::IData*>(item);
-    uint8_t* p_data;
-    uint32_t* l= new uint32_t;
+	uint8_t* p_data;
+	uint32_t* l= new uint32_t;
 
 	it->getData(*l,&p_data);
 	*length = (uint64_t)*l;
 	*data = (uint8_t*) malloc (*length * sizeof(uint8_t));
 
 	memcpy(*data, p_data, *length);
-        delete[] p_data;
-        delete l;
+	delete[] p_data;
+	delete l;
 	return RT_None;
-	
+
 }
 
 SIDX_C_DLL uint64_t IndexItem_GetID(IndexItemH item) 
@@ -867,37 +869,37 @@ SIDX_C_DLL uint64_t IndexItem_GetID(IndexItemH item)
 }
 
 SIDX_C_DLL RTError IndexItem_GetBounds(	  IndexItemH item, 
-										double** ppdMin, 
-										double** ppdMax, 
-										uint32_t* nDimension)
+		double** ppdMin,
+		double** ppdMax,
+		uint32_t* nDimension)
 {
 	VALIDATE_POINTER1(item, "IndexItem_GetBounds", RT_Failure);
 	SpatialIndex::IData* it = static_cast<SpatialIndex::IData*>(item);
-	
+
 	SpatialIndex::IShape* s;
-    it->getShape(&s);
-    
+	it->getShape(&s);
+
 	SpatialIndex::Region *bounds = new SpatialIndex::Region();
-    s->getMBR(*bounds);
-	
+	s->getMBR(*bounds);
+
 	if (bounds == 0) { 
 		*nDimension = 0;
-                delete bounds;
-                delete s;
+		delete bounds;
+		delete s;
 		return RT_None;
 	}
 	*nDimension = bounds->getDimension();
-		
+
 	*ppdMin = (double*) malloc (*nDimension * sizeof(double));
 	*ppdMax = (double*) malloc (*nDimension * sizeof(double));
-	
+
 	if (ppdMin == NULL || ppdMax == NULL) {
 		Error_PushError(RT_Failure, 
-						"Unable to allocation bounds array(s)", 
-						"IndexItem_GetBounds");
+				"Unable to allocation bounds array(s)",
+				"IndexItem_GetBounds");
 		return RT_Failure;			 
 	}
-	
+
 	for (uint32_t i=0; i< *nDimension; ++i) {
 		(*ppdMin)[i] = bounds->getLow(i);
 		(*ppdMax)[i] = bounds->getHigh(i);
@@ -921,7 +923,7 @@ SIDX_C_DLL void IndexProperty_Destroy(IndexPropertyH hProp)
 }
 
 SIDX_C_DLL RTError IndexProperty_SetIndexType(IndexPropertyH hProp, 
-											RTIndexType value)
+		RTIndexType value)
 {
 	VALIDATE_POINTER1(hProp, "IndexProperty_SetIndexType", RT_Failure);	   
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
@@ -940,19 +942,19 @@ SIDX_C_DLL RTError IndexProperty_SetIndexType(IndexPropertyH hProp,
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetIndexType");
+				e.what().c_str(),
+				"IndexProperty_SetIndexType");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetIndexType");
+				e.what(),
+				"IndexProperty_SetIndexType");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetIndexType");
+				"Unknown Error",
+				"IndexProperty_SetIndexType");
 		return RT_Failure;		  
 	}
 	return RT_None;
@@ -970,16 +972,16 @@ SIDX_C_DLL RTIndexType IndexProperty_GetIndexType(IndexPropertyH hProp)
 	{
 		if (var.m_varType != Tools::VT_ULONG) {
 			Error_PushError(RT_Failure, 
-							"Property IndexType must be Tools::VT_ULONG", 
-							"IndexProperty_GetIndexType");
+					"Property IndexType must be Tools::VT_ULONG",
+					"IndexProperty_GetIndexType");
 			return RT_InvalidIndexType;
 		}
 		return (RTIndexType) var.m_val.ulVal;
 	}
 
 	Error_PushError(RT_Failure, 
-					"Property IndexType was empty", 
-					"IndexProperty_GetIndexType");	  
+			"Property IndexType was empty",
+			"IndexProperty_GetIndexType");
 	return RT_InvalidIndexType;
 
 }
@@ -998,19 +1000,19 @@ SIDX_C_DLL RTError IndexProperty_SetDimension(IndexPropertyH hProp, uint32_t val
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetDimension");
+				e.what().c_str(),
+				"IndexProperty_SetDimension");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetDimension");
+				e.what(),
+				"IndexProperty_SetDimension");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetDimension");
+				"Unknown Error",
+				"IndexProperty_SetDimension");
 		return RT_Failure;		  
 	}
 	return RT_None;
@@ -1028,23 +1030,23 @@ SIDX_C_DLL uint32_t IndexProperty_GetDimension(IndexPropertyH hProp)
 	{
 		if (var.m_varType != Tools::VT_ULONG) {
 			Error_PushError(RT_Failure, 
-							"Property IndexType must be Tools::VT_ULONG", 
-							"IndexProperty_GetDimension");
+					"Property IndexType must be Tools::VT_ULONG",
+					"IndexProperty_GetDimension");
 			return 0;
 		}
-		
+
 		return var.m_val.ulVal;
 	}
-	
+
 	// A zero dimension index is invalid.
 	Error_PushError(RT_Failure, 
-					"Property Dimension was empty", 
-					"IndexProperty_GetDimension");
+			"Property Dimension was empty",
+			"IndexProperty_GetDimension");
 	return 0;
 }
 
 SIDX_C_DLL RTError IndexProperty_SetIndexVariant( IndexPropertyH hProp, 
-												RTIndexVariant value)
+		RTIndexVariant value)
 {
 	using namespace SpatialIndex;
 
@@ -1052,20 +1054,20 @@ SIDX_C_DLL RTError IndexProperty_SetIndexVariant( IndexPropertyH hProp,
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
 
 	Tools::Variant var;
-	
+
 	try
 	{
 
 		if (!(value == RT_Linear || value == RT_Quadratic || value == RT_Star)) {
 			throw std::runtime_error("Inputted value is not a valid index variant");
 		}
-		
+
 		var.m_varType = Tools::VT_LONG;
 		RTIndexType type = IndexProperty_GetIndexType(hProp);
 		if (type == RT_InvalidIndexType ) {
 			Error_PushError(RT_Failure, 
-							"Index type is not properly set", 
-							"IndexProperty_SetIndexVariant");
+					"Index type is not properly set",
+					"IndexProperty_SetIndexVariant");
 			return RT_Failure;
 		}
 		if (type == RT_RTree) {
@@ -1078,23 +1080,23 @@ SIDX_C_DLL RTError IndexProperty_SetIndexVariant( IndexPropertyH hProp,
 			var.m_val.lVal = static_cast<TPRTree::TPRTreeVariant>(value);
 			prop->setProperty("TreeVariant", var);	 
 		}
-	
+
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetIndexVariant");
+				e.what().c_str(),
+				"IndexProperty_SetIndexVariant");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetIndexCapacity");
+				e.what(),
+				"IndexProperty_SetIndexCapacity");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetIndexCapacity");
+				"Unknown Error",
+				"IndexProperty_SetIndexCapacity");
 		return RT_Failure;		  
 	}
 	return RT_None;
@@ -1103,37 +1105,37 @@ SIDX_C_DLL RTError IndexProperty_SetIndexVariant( IndexPropertyH hProp,
 SIDX_C_DLL RTIndexVariant IndexProperty_GetIndexVariant(IndexPropertyH hProp)
 {
 	VALIDATE_POINTER1(	hProp, 
-						"IndexProperty_GetIndexVariant", 
-						RT_InvalidIndexVariant);
+			"IndexProperty_GetIndexVariant",
+			RT_InvalidIndexVariant);
 
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
 
 	Tools::Variant var;
 	var = prop->getProperty("TreeVariant");
 
-	
+
 	if (var.m_varType != Tools::VT_EMPTY)
 	{
 		if (var.m_varType != Tools::VT_LONG) {
 			Error_PushError(RT_Failure, 
-							"Property IndexVariant must be Tools::VT_LONG", 
-							"IndexProperty_GetIndexVariant");
+					"Property IndexVariant must be Tools::VT_LONG",
+					"IndexProperty_GetIndexVariant");
 			return RT_InvalidIndexVariant;
 		}
-		
+
 		return static_cast<RTIndexVariant>(var.m_val.lVal);
 	}
-	
+
 	// if we didn't get anything, we're returning an error condition
 	Error_PushError(RT_Failure, 
-					"Property IndexVariant was empty", 
-					"IndexProperty_GetIndexVariant");
+			"Property IndexVariant was empty",
+			"IndexProperty_GetIndexVariant");
 	return RT_InvalidIndexVariant;
 
 }
 
 SIDX_C_DLL RTError IndexProperty_SetIndexStorage( IndexPropertyH hProp, 
-												RTStorageType value)
+		RTStorageType value)
 {
 	VALIDATE_POINTER1(hProp, "IndexProperty_SetIndexStorage", RT_Failure);	  
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
@@ -1150,19 +1152,19 @@ SIDX_C_DLL RTError IndexProperty_SetIndexStorage( IndexPropertyH hProp,
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetIndexStorage");
+				e.what().c_str(),
+				"IndexProperty_SetIndexStorage");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetIndexStorage");
+				e.what(),
+				"IndexProperty_SetIndexStorage");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetIndexStorage");
+				"Unknown Error",
+				"IndexProperty_SetIndexStorage");
 		return RT_Failure;		  
 	}
 	return RT_None;
@@ -1171,8 +1173,8 @@ SIDX_C_DLL RTError IndexProperty_SetIndexStorage( IndexPropertyH hProp,
 SIDX_C_DLL RTStorageType IndexProperty_GetIndexStorage(IndexPropertyH hProp)
 {
 	VALIDATE_POINTER1(	hProp, 
-						"IndexProperty_GetIndexStorage", 
-						RT_InvalidStorageType);
+			"IndexProperty_GetIndexStorage",
+			RT_InvalidStorageType);
 
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
 
@@ -1183,24 +1185,24 @@ SIDX_C_DLL RTStorageType IndexProperty_GetIndexStorage(IndexPropertyH hProp)
 	{
 		if (var.m_varType != Tools::VT_ULONG) {
 			Error_PushError(RT_Failure, 
-							"Property IndexStorage must be Tools::VT_ULONG", 
-							"IndexProperty_GetIndexStorage");
+					"Property IndexStorage must be Tools::VT_ULONG",
+					"IndexProperty_GetIndexStorage");
 			return RT_InvalidStorageType;
 		}
-		
+
 		return static_cast<RTStorageType>(var.m_val.ulVal);
 	}
-	
+
 	// if we didn't get anything, we're returning an error condition
 	Error_PushError(RT_Failure, 
-					"Property IndexStorage was empty", 
-					"IndexProperty_GetIndexStorage");
+			"Property IndexStorage was empty",
+			"IndexProperty_GetIndexStorage");
 	return RT_InvalidStorageType;
 
 }
 
 SIDX_C_DLL RTError IndexProperty_SetIndexCapacity(IndexPropertyH hProp, 
-												uint32_t value)
+		uint32_t value)
 {
 	VALIDATE_POINTER1(hProp, "IndexProperty_SetIndexCapacity", RT_Failure);	   
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
@@ -1214,19 +1216,19 @@ SIDX_C_DLL RTError IndexProperty_SetIndexCapacity(IndexPropertyH hProp,
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetIndexCapacity");
+				e.what().c_str(),
+				"IndexProperty_SetIndexCapacity");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetIndexCapacity");
+				e.what(),
+				"IndexProperty_SetIndexCapacity");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetIndexCapacity");
+				"Unknown Error",
+				"IndexProperty_SetIndexCapacity");
 		return RT_Failure;		  
 	}
 	return RT_None;
@@ -1244,23 +1246,23 @@ SIDX_C_DLL uint32_t IndexProperty_GetIndexCapacity(IndexPropertyH hProp)
 	{
 		if (var.m_varType != Tools::VT_ULONG) {
 			Error_PushError(RT_Failure, 
-							"Property IndexCapacity must be Tools::VT_ULONG", 
-							"IndexProperty_GetIndexCapacity");
+					"Property IndexCapacity must be Tools::VT_ULONG",
+					"IndexProperty_GetIndexCapacity");
 			return 0;
 		}
-		
+
 		return var.m_val.ulVal;
 	}
-	
+
 	// return nothing for an error
 	Error_PushError(RT_Failure, 
-					"Property IndexCapacity was empty", 
-					"IndexProperty_GetIndexCapacity");
+			"Property IndexCapacity was empty",
+			"IndexProperty_GetIndexCapacity");
 	return 0;
 }
 
 SIDX_C_DLL RTError IndexProperty_SetLeafCapacity( IndexPropertyH hProp, 
-												uint32_t value)
+		uint32_t value)
 {
 	VALIDATE_POINTER1(hProp, "IndexProperty_SetLeafCapacity", RT_Failure);	  
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
@@ -1274,19 +1276,19 @@ SIDX_C_DLL RTError IndexProperty_SetLeafCapacity( IndexPropertyH hProp,
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetLeafCapacity");
+				e.what().c_str(),
+				"IndexProperty_SetLeafCapacity");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetLeafCapacity");
+				e.what(),
+				"IndexProperty_SetLeafCapacity");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetLeafCapacity");
+				"Unknown Error",
+				"IndexProperty_SetLeafCapacity");
 		return RT_Failure;		  
 	}
 	return RT_None;
@@ -1304,23 +1306,23 @@ SIDX_C_DLL uint32_t IndexProperty_GetLeafCapacity(IndexPropertyH hProp)
 	{
 		if (var.m_varType != Tools::VT_ULONG) {
 			Error_PushError(RT_Failure, 
-							"Property LeafCapacity must be Tools::VT_ULONG", 
-							"IndexProperty_GetLeafCapacity");
+					"Property LeafCapacity must be Tools::VT_ULONG",
+					"IndexProperty_GetLeafCapacity");
 			return 0;
 		}
-		
+
 		return var.m_val.ulVal;
 	}
-	
+
 	// return nothing for an error
 	Error_PushError(RT_Failure, 
-					"Property LeafCapacity was empty", 
-					"IndexProperty_GetLeafCapacity");
+			"Property LeafCapacity was empty",
+			"IndexProperty_GetLeafCapacity");
 	return 0;
 }
 
 SIDX_C_DLL RTError IndexProperty_SetPagesize( IndexPropertyH hProp, 
-											uint32_t value)
+		uint32_t value)
 {
 	VALIDATE_POINTER1(hProp, "IndexProperty_SetPagesize", RT_Failure);	  
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
@@ -1334,19 +1336,19 @@ SIDX_C_DLL RTError IndexProperty_SetPagesize( IndexPropertyH hProp,
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetPagesize");
+				e.what().c_str(),
+				"IndexProperty_SetPagesize");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetPagesize");
+				e.what(),
+				"IndexProperty_SetPagesize");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetPagesize");
+				"Unknown Error",
+				"IndexProperty_SetPagesize");
 		return RT_Failure;		  
 	}
 	return RT_None;
@@ -1364,23 +1366,23 @@ SIDX_C_DLL uint32_t IndexProperty_GetPagesize(IndexPropertyH hProp)
 	{
 		if (var.m_varType != Tools::VT_ULONG) {
 			Error_PushError(RT_Failure, 
-							"Property PageSize must be Tools::VT_ULONG", 
-							"IndexProperty_GetPagesize");
+					"Property PageSize must be Tools::VT_ULONG",
+					"IndexProperty_GetPagesize");
 			return 0;
 		}
-		
+
 		return var.m_val.ulVal;
 	}
-	
+
 	// return nothing for an error
 	Error_PushError(RT_Failure, 
-					"Property PageSize was empty", 
-					"IndexProperty_GetPagesize");
+			"Property PageSize was empty",
+			"IndexProperty_GetPagesize");
 	return 0;
 }
 
 SIDX_C_DLL RTError IndexProperty_SetLeafPoolCapacity( IndexPropertyH hProp, 
-													uint32_t value)
+		uint32_t value)
 {
 	VALIDATE_POINTER1(hProp, "IndexProperty_SetLeafPoolCapacity", RT_Failure);	  
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
@@ -1394,19 +1396,19 @@ SIDX_C_DLL RTError IndexProperty_SetLeafPoolCapacity( IndexPropertyH hProp,
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetLeafPoolCapacity");
+				e.what().c_str(),
+				"IndexProperty_SetLeafPoolCapacity");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetLeafPoolCapacity");
+				e.what(),
+				"IndexProperty_SetLeafPoolCapacity");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetLeafPoolCapacity");
+				"Unknown Error",
+				"IndexProperty_SetLeafPoolCapacity");
 		return RT_Failure;		  
 	}
 	return RT_None;
@@ -1424,23 +1426,23 @@ SIDX_C_DLL uint32_t IndexProperty_GetLeafPoolCapacity(IndexPropertyH hProp)
 	{
 		if (var.m_varType != Tools::VT_ULONG) {
 			Error_PushError(RT_Failure, 
-							"Property LeafPoolCapacity must be Tools::VT_ULONG", 
-							"IndexProperty_GetLeafPoolCapacity");
+					"Property LeafPoolCapacity must be Tools::VT_ULONG",
+					"IndexProperty_GetLeafPoolCapacity");
 			return 0;
 		}
-		
+
 		return var.m_val.ulVal;
 	}
-	
+
 	// return nothing for an error
 	Error_PushError(RT_Failure, 
-					"Property LeafPoolCapacity was empty", 
-					"IndexProperty_GetLeafPoolCapacity");
+			"Property LeafPoolCapacity was empty",
+			"IndexProperty_GetLeafPoolCapacity");
 	return 0;
 }
 
 SIDX_C_DLL RTError IndexProperty_SetIndexPoolCapacity(IndexPropertyH hProp, 
-													uint32_t value)
+		uint32_t value)
 {
 	VALIDATE_POINTER1(hProp, "IndexProperty_SetIndexPoolCapacity", RT_Failure);	   
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
@@ -1454,19 +1456,19 @@ SIDX_C_DLL RTError IndexProperty_SetIndexPoolCapacity(IndexPropertyH hProp,
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetIndexPoolCapacity");
+				e.what().c_str(),
+				"IndexProperty_SetIndexPoolCapacity");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetIndexPoolCapacity");
+				e.what(),
+				"IndexProperty_SetIndexPoolCapacity");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetIndexPoolCapacity");
+				"Unknown Error",
+				"IndexProperty_SetIndexPoolCapacity");
 		return RT_Failure;		  
 	}
 	return RT_None;
@@ -1484,23 +1486,23 @@ SIDX_C_DLL uint32_t IndexProperty_GetIndexPoolCapacity(IndexPropertyH hProp)
 	{
 		if (var.m_varType != Tools::VT_ULONG) {
 			Error_PushError(RT_Failure, 
-							"Property IndexPoolCapacity must be Tools::VT_ULONG", 
-							"IndexProperty_GetIndexPoolCapacity");
+					"Property IndexPoolCapacity must be Tools::VT_ULONG",
+					"IndexProperty_GetIndexPoolCapacity");
 			return 0;
 		}
-		
+
 		return var.m_val.ulVal;
 	}
-	
+
 	// return nothing for an error
 	Error_PushError(RT_Failure, 
-					"Property IndexPoolCapacity was empty", 
-					"IndexProperty_GetIndexPoolCapacity");
+			"Property IndexPoolCapacity was empty",
+			"IndexProperty_GetIndexPoolCapacity");
 	return 0;
 }
 
 SIDX_C_DLL RTError IndexProperty_SetRegionPoolCapacity(IndexPropertyH hProp, 
-													uint32_t value)
+		uint32_t value)
 {
 	VALIDATE_POINTER1(hProp, "IndexProperty_SetRegionPoolCapacity", RT_Failure);	
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
@@ -1514,19 +1516,19 @@ SIDX_C_DLL RTError IndexProperty_SetRegionPoolCapacity(IndexPropertyH hProp,
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetRegionPoolCapacity");
+				e.what().c_str(),
+				"IndexProperty_SetRegionPoolCapacity");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetRegionPoolCapacity");
+				e.what(),
+				"IndexProperty_SetRegionPoolCapacity");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetRegionPoolCapacity");
+				"Unknown Error",
+				"IndexProperty_SetRegionPoolCapacity");
 		return RT_Failure;		  
 	}
 	return RT_None;
@@ -1544,23 +1546,23 @@ SIDX_C_DLL uint32_t IndexProperty_GetRegionPoolCapacity(IndexPropertyH hProp)
 	{
 		if (var.m_varType != Tools::VT_ULONG) {
 			Error_PushError(RT_Failure, 
-							"Property RegionPoolCapacity must be Tools::VT_ULONG", 
-							"IndexProperty_GetRegionPoolCapacity");
+					"Property RegionPoolCapacity must be Tools::VT_ULONG",
+					"IndexProperty_GetRegionPoolCapacity");
 			return 0;
 		}
-		
+
 		return var.m_val.ulVal;
 	}
-	
+
 	// return nothing for an error
 	Error_PushError(RT_Failure, 
-					"Property RegionPoolCapacity was empty", 
-					"IndexProperty_GetRegionPoolCapacity");
+			"Property RegionPoolCapacity was empty",
+			"IndexProperty_GetRegionPoolCapacity");
 	return 0;
 }
 
 SIDX_C_DLL RTError IndexProperty_SetPointPoolCapacity(IndexPropertyH hProp, 
-													uint32_t value)
+		uint32_t value)
 {
 	VALIDATE_POINTER1(hProp, "IndexProperty_SetPointPoolCapacity", RT_Failure);	   
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
@@ -1574,19 +1576,19 @@ SIDX_C_DLL RTError IndexProperty_SetPointPoolCapacity(IndexPropertyH hProp,
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetPointPoolCapacity");
+				e.what().c_str(),
+				"IndexProperty_SetPointPoolCapacity");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetPointPoolCapacity");
+				e.what(),
+				"IndexProperty_SetPointPoolCapacity");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetPointPoolCapacity");
+				"Unknown Error",
+				"IndexProperty_SetPointPoolCapacity");
 		return RT_Failure;		  
 	}
 	return RT_None;
@@ -1604,27 +1606,27 @@ SIDX_C_DLL uint32_t IndexProperty_GetPointPoolCapacity(IndexPropertyH hProp)
 	{
 		if (var.m_varType != Tools::VT_ULONG) {
 			Error_PushError(RT_Failure, 
-							"Property PointPoolCapacity must be Tools::VT_ULONG", 
-							"IndexProperty_GetPointPoolCapacity");
+					"Property PointPoolCapacity must be Tools::VT_ULONG",
+					"IndexProperty_GetPointPoolCapacity");
 			return 0;
 		}
-		
+
 		return var.m_val.ulVal;
 	}
-	
+
 	// return nothing for an error
 	Error_PushError(RT_Failure, 
-					"Property PointPoolCapacity was empty", 
-					"IndexProperty_GetPointPoolCapacity");
+			"Property PointPoolCapacity was empty",
+			"IndexProperty_GetPointPoolCapacity");
 	return 0;
 }
 
 SIDX_C_DLL RTError IndexProperty_SetNearMinimumOverlapFactor( IndexPropertyH hProp, 
-															uint32_t value)
+		uint32_t value)
 {
 	VALIDATE_POINTER1(	hProp, 
-						"IndexProperty_SetNearMinimumOverlapFactor", 
-						RT_Failure);	
+			"IndexProperty_SetNearMinimumOverlapFactor",
+			RT_Failure);
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
 
 	try
@@ -1636,19 +1638,19 @@ SIDX_C_DLL RTError IndexProperty_SetNearMinimumOverlapFactor( IndexPropertyH hPr
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetNearMinimumOverlapFactor");
+				e.what().c_str(),
+				"IndexProperty_SetNearMinimumOverlapFactor");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetNearMinimumOverlapFactor");
+				e.what(),
+				"IndexProperty_SetNearMinimumOverlapFactor");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetNearMinimumOverlapFactor");
+				"Unknown Error",
+				"IndexProperty_SetNearMinimumOverlapFactor");
 		return RT_Failure;		  
 	}
 	return RT_None;
@@ -1666,24 +1668,24 @@ SIDX_C_DLL uint32_t IndexProperty_GetNearMinimumOverlapFactor(IndexPropertyH hPr
 	{
 		if (var.m_varType != Tools::VT_ULONG) {
 			Error_PushError(RT_Failure, 
-							"Property NearMinimumOverlapFactor must be Tools::VT_ULONG", 
-							"IndexProperty_GetNearMinimumOverlapFactor");
+					"Property NearMinimumOverlapFactor must be Tools::VT_ULONG",
+					"IndexProperty_GetNearMinimumOverlapFactor");
 			return 0;
 		}
-		
+
 		return var.m_val.ulVal;
 	}
-	
+
 	// return nothing for an error
 	Error_PushError(RT_Failure, 
-					"Property NearMinimumOverlapFactor was empty", 
-					"IndexProperty_GetNearMinimumOverlapFactor");
+			"Property NearMinimumOverlapFactor was empty",
+			"IndexProperty_GetNearMinimumOverlapFactor");
 	return 0;
 }
 
 
 SIDX_C_DLL RTError IndexProperty_SetBufferingCapacity(IndexPropertyH hProp, 
-												uint32_t value)
+		uint32_t value)
 {
 	VALIDATE_POINTER1(hProp, "IndexProperty_SetBufferingCapacity", RT_Failure);	   
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
@@ -1697,19 +1699,19 @@ SIDX_C_DLL RTError IndexProperty_SetBufferingCapacity(IndexPropertyH hProp,
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetBufferingCapacity");
+				e.what().c_str(),
+				"IndexProperty_SetBufferingCapacity");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetBufferingCapacity");
+				e.what(),
+				"IndexProperty_SetBufferingCapacity");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetBufferingCapacity");
+				"Unknown Error",
+				"IndexProperty_SetBufferingCapacity");
 		return RT_Failure;		  
 	}
 	return RT_None;
@@ -1727,23 +1729,23 @@ SIDX_C_DLL uint32_t IndexProperty_GetBufferingCapacity(IndexPropertyH hProp)
 	{
 		if (var.m_varType != Tools::VT_ULONG) {
 			Error_PushError(RT_Failure, 
-							"Property Capacity must be Tools::VT_ULONG", 
-							"IndexProperty_GetBufferingCapacity");
+					"Property Capacity must be Tools::VT_ULONG",
+					"IndexProperty_GetBufferingCapacity");
 			return 0;
 		}
-		
+
 		return var.m_val.ulVal;
 	}
-	
+
 	// return nothing for an error
 	Error_PushError(RT_Failure, 
-					"Property Capacity was empty", 
-					"IndexProperty_GetBufferingCapacity");
+			"Property Capacity was empty",
+			"IndexProperty_GetBufferingCapacity");
 	return 0;
 }
 
 SIDX_C_DLL RTError IndexProperty_SetEnsureTightMBRs(  IndexPropertyH hProp, 
-													uint32_t value)
+		uint32_t value)
 {
 	VALIDATE_POINTER1(hProp, "IndexProperty_SetEnsureTightMBRs", RT_Failure);	 
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
@@ -1752,8 +1754,8 @@ SIDX_C_DLL RTError IndexProperty_SetEnsureTightMBRs(  IndexPropertyH hProp,
 	{
 		if (value > 1 ) {
 			Error_PushError(RT_Failure, 
-							"EnsureTightMBRs is a boolean value and must be 1 or 0", 
-							"IndexProperty_SetEnsureTightMBRs");
+					"EnsureTightMBRs is a boolean value and must be 1 or 0",
+					"IndexProperty_SetEnsureTightMBRs");
 			return RT_Failure;
 		}
 		Tools::Variant var;
@@ -1763,19 +1765,19 @@ SIDX_C_DLL RTError IndexProperty_SetEnsureTightMBRs(  IndexPropertyH hProp,
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetEnsureTightMBRs");
+				e.what().c_str(),
+				"IndexProperty_SetEnsureTightMBRs");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetEnsureTightMBRs");
+				e.what(),
+				"IndexProperty_SetEnsureTightMBRs");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetEnsureTightMBRs");
+				"Unknown Error",
+				"IndexProperty_SetEnsureTightMBRs");
 		return RT_Failure;		  
 	}
 	return RT_None;
@@ -1793,23 +1795,23 @@ SIDX_C_DLL uint32_t IndexProperty_GetEnsureTightMBRs(IndexPropertyH hProp)
 	{
 		if (var.m_varType != Tools::VT_BOOL) {
 			Error_PushError(RT_Failure, 
-							"Property EnsureTightMBRs must be Tools::VT_BOOL", 
-							"IndexProperty_GetEnsureTightMBRs");
+					"Property EnsureTightMBRs must be Tools::VT_BOOL",
+					"IndexProperty_GetEnsureTightMBRs");
 			return 0;
 		}
-		
+
 		return var.m_val.blVal;
 	}
-	
+
 	// return nothing for an error
 	Error_PushError(RT_Failure, 
-					"Property EnsureTightMBRs was empty", 
-					"IndexProperty_GetEnsureTightMBRs");
+			"Property EnsureTightMBRs was empty",
+			"IndexProperty_GetEnsureTightMBRs");
 	return 0;
 }
 
 SIDX_C_DLL RTError IndexProperty_SetWriteThrough(IndexPropertyH hProp, 
-													uint32_t value)
+		uint32_t value)
 {
 	VALIDATE_POINTER1(hProp, "IndexProperty_SetWriteThrough", RT_Failure);	  
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
@@ -1818,8 +1820,8 @@ SIDX_C_DLL RTError IndexProperty_SetWriteThrough(IndexPropertyH hProp,
 	{
 		if (value > 1 ) {
 			Error_PushError(RT_Failure, 
-							"WriteThrough is a boolean value and must be 1 or 0", 
-							"IndexProperty_SetWriteThrough");
+					"WriteThrough is a boolean value and must be 1 or 0",
+					"IndexProperty_SetWriteThrough");
 			return RT_Failure;
 		}
 		Tools::Variant var;
@@ -1829,19 +1831,19 @@ SIDX_C_DLL RTError IndexProperty_SetWriteThrough(IndexPropertyH hProp,
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetWriteThrough");
+				e.what().c_str(),
+				"IndexProperty_SetWriteThrough");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetWriteThrough");
+				e.what(),
+				"IndexProperty_SetWriteThrough");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetWriteThrough");
+				"Unknown Error",
+				"IndexProperty_SetWriteThrough");
 		return RT_Failure;		  
 	}
 	return RT_None;
@@ -1859,23 +1861,23 @@ SIDX_C_DLL uint32_t IndexProperty_GetWriteThrough(IndexPropertyH hProp)
 	{
 		if (var.m_varType != Tools::VT_BOOL) {
 			Error_PushError(RT_Failure, 
-							"Property WriteThrough must be Tools::VT_BOOL", 
-							"IndexProperty_GetWriteThrough");
+					"Property WriteThrough must be Tools::VT_BOOL",
+					"IndexProperty_GetWriteThrough");
 			return 0;
 		}
-		
+
 		return var.m_val.blVal;
 	}
-	
+
 	// return nothing for an error
 	Error_PushError(RT_Failure, 
-					"Property WriteThrough was empty", 
-					"IndexProperty_GetWriteThrough");
+			"Property WriteThrough was empty",
+			"IndexProperty_GetWriteThrough");
 	return 0;
 }
 
 SIDX_C_DLL RTError IndexProperty_SetOverwrite(IndexPropertyH hProp, 
-											uint32_t value)
+		uint32_t value)
 {
 	VALIDATE_POINTER1(hProp, "IndexProperty_SetOverwrite", RT_Failure);	   
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
@@ -1884,8 +1886,8 @@ SIDX_C_DLL RTError IndexProperty_SetOverwrite(IndexPropertyH hProp,
 	{
 		if (value > 1 ) {
 			Error_PushError(RT_Failure, 
-							"Overwrite is a boolean value and must be 1 or 0", 
-							"IndexProperty_SetOverwrite");
+					"Overwrite is a boolean value and must be 1 or 0",
+					"IndexProperty_SetOverwrite");
 			return RT_Failure;
 		}
 		Tools::Variant var;
@@ -1895,19 +1897,19 @@ SIDX_C_DLL RTError IndexProperty_SetOverwrite(IndexPropertyH hProp,
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetOverwrite");
+				e.what().c_str(),
+				"IndexProperty_SetOverwrite");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetOverwrite");
+				e.what(),
+				"IndexProperty_SetOverwrite");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetOverwrite");
+				"Unknown Error",
+				"IndexProperty_SetOverwrite");
 		return RT_Failure;		  
 	}
 	return RT_None;
@@ -1925,24 +1927,24 @@ SIDX_C_DLL uint32_t IndexProperty_GetOverwrite(IndexPropertyH hProp)
 	{
 		if (var.m_varType != Tools::VT_BOOL) {
 			Error_PushError(RT_Failure, 
-							"Property Overwrite must be Tools::VT_BOOL", 
-							"IndexProperty_GetOverwrite");
+					"Property Overwrite must be Tools::VT_BOOL",
+					"IndexProperty_GetOverwrite");
 			return 0;
 		}
-		
+
 		return var.m_val.blVal;
 	}
-	
+
 	// return nothing for an error
 	Error_PushError(RT_Failure, 
-					"Property Overwrite was empty", 
-					"IndexProperty_GetOverwrite");
+			"Property Overwrite was empty",
+			"IndexProperty_GetOverwrite");
 	return 0;
 }
 
 
 SIDX_C_DLL RTError IndexProperty_SetFillFactor(	  IndexPropertyH hProp, 
-												double value)
+		double value)
 {
 	VALIDATE_POINTER1(hProp, "IndexProperty_SetFillFactor", RT_Failure);	
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
@@ -1956,19 +1958,19 @@ SIDX_C_DLL RTError IndexProperty_SetFillFactor(	  IndexPropertyH hProp,
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetFillFactor");
+				e.what().c_str(),
+				"IndexProperty_SetFillFactor");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetFillFactor");
+				e.what(),
+				"IndexProperty_SetFillFactor");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetFillFactor");
+				"Unknown Error",
+				"IndexProperty_SetFillFactor");
 		return RT_Failure;		  
 	}
 	return RT_None;
@@ -1986,27 +1988,27 @@ SIDX_C_DLL double IndexProperty_GetFillFactor(IndexPropertyH hProp)
 	{
 		if (var.m_varType != Tools::VT_DOUBLE) {
 			Error_PushError(RT_Failure, 
-							"Property FillFactor must be Tools::VT_DOUBLE", 
-							"IndexProperty_GetFillFactor");
+					"Property FillFactor must be Tools::VT_DOUBLE",
+					"IndexProperty_GetFillFactor");
 			return 0;
 		}
-		
+
 		return var.m_val.dblVal;
 	}
-	
+
 	// return nothing for an error
 	Error_PushError(RT_Failure, 
-					"Property FillFactor was empty", 
-					"IndexProperty_GetFillFactor");
+			"Property FillFactor was empty",
+			"IndexProperty_GetFillFactor");
 	return 0;
 }
 
 SIDX_C_DLL RTError IndexProperty_SetSplitDistributionFactor(  IndexPropertyH hProp, 
-															double value)
+		double value)
 {
 	VALIDATE_POINTER1(	hProp, 
-						"IndexProperty_SetSplitDistributionFactor", 
-						RT_Failure);	
+			"IndexProperty_SetSplitDistributionFactor",
+			RT_Failure);
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
 
 	try
@@ -2018,19 +2020,19 @@ SIDX_C_DLL RTError IndexProperty_SetSplitDistributionFactor(  IndexPropertyH hPr
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetSplitDistributionFactor");
+				e.what().c_str(),
+				"IndexProperty_SetSplitDistributionFactor");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetSplitDistributionFactor");
+				e.what(),
+				"IndexProperty_SetSplitDistributionFactor");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetSplitDistributionFactor");
+				"Unknown Error",
+				"IndexProperty_SetSplitDistributionFactor");
 		return RT_Failure;		  
 	}
 	return RT_None;
@@ -2048,27 +2050,27 @@ SIDX_C_DLL double IndexProperty_GetSplitDistributionFactor(IndexPropertyH hProp)
 	{
 		if (var.m_varType != Tools::VT_DOUBLE) {
 			Error_PushError(RT_Failure, 
-							"Property SplitDistributionFactor must be Tools::VT_DOUBLE", 
-							"IndexProperty_GetSplitDistributionFactor");
+					"Property SplitDistributionFactor must be Tools::VT_DOUBLE",
+					"IndexProperty_GetSplitDistributionFactor");
 			return 0;
 		}
-		
+
 		return var.m_val.dblVal;
 	}
-	
+
 	// return nothing for an error
 	Error_PushError(RT_Failure, 
-					"Property SplitDistributionFactor was empty", 
-					"IndexProperty_GetSplitDistributionFactor");
+			"Property SplitDistributionFactor was empty",
+			"IndexProperty_GetSplitDistributionFactor");
 	return 0;
 }
 
 SIDX_C_DLL RTError IndexProperty_SetTPRHorizon(IndexPropertyH hProp, 
-											 double value)
+		double value)
 {
 	VALIDATE_POINTER1(	hProp, 
-						"IndexProperty_SetTPRHorizon", 
-						RT_Failure);	
+			"IndexProperty_SetTPRHorizon",
+			RT_Failure);
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
 
 	try
@@ -2080,19 +2082,19 @@ SIDX_C_DLL RTError IndexProperty_SetTPRHorizon(IndexPropertyH hProp,
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetTPRHorizon");
+				e.what().c_str(),
+				"IndexProperty_SetTPRHorizon");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetTPRHorizon");
+				e.what(),
+				"IndexProperty_SetTPRHorizon");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetTPRHorizon");
+				"Unknown Error",
+				"IndexProperty_SetTPRHorizon");
 		return RT_Failure;		  
 	}
 	return RT_None;
@@ -2110,27 +2112,27 @@ SIDX_C_DLL double IndexProperty_GetTPRHorizon(IndexPropertyH hProp)
 	{
 		if (var.m_varType != Tools::VT_DOUBLE) {
 			Error_PushError(RT_Failure, 
-							"Property Horizon must be Tools::VT_DOUBLE", 
-							"IndexProperty_GetTPRHorizon");
+					"Property Horizon must be Tools::VT_DOUBLE",
+					"IndexProperty_GetTPRHorizon");
 			return 0;
 		}
-		
+
 		return var.m_val.dblVal;
 	}
-	
+
 	// return nothing for an error
 	Error_PushError(RT_Failure, 
-					"Property Horizon was empty", 
-					"IndexProperty_GetTPRHorizon");
+			"Property Horizon was empty",
+			"IndexProperty_GetTPRHorizon");
 	return 0;
 }
 
 SIDX_C_DLL RTError IndexProperty_SetReinsertFactor(	  IndexPropertyH hProp, 
-													double value)
+		double value)
 {
 	VALIDATE_POINTER1(	hProp, 
-						"IndexProperty_SetReinsertFactor", 
-						RT_Failure);	
+			"IndexProperty_SetReinsertFactor",
+			RT_Failure);
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
 
 	try
@@ -2142,19 +2144,19 @@ SIDX_C_DLL RTError IndexProperty_SetReinsertFactor(	  IndexPropertyH hProp,
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetReinsertFactor");
+				e.what().c_str(),
+				"IndexProperty_SetReinsertFactor");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetReinsertFactor");
+				e.what(),
+				"IndexProperty_SetReinsertFactor");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetReinsertFactor");
+				"Unknown Error",
+				"IndexProperty_SetReinsertFactor");
 		return RT_Failure;		  
 	}
 	return RT_None;
@@ -2172,27 +2174,27 @@ SIDX_C_DLL double IndexProperty_GetReinsertFactor(IndexPropertyH hProp)
 	{
 		if (var.m_varType != Tools::VT_DOUBLE) {
 			Error_PushError(RT_Failure, 
-							"Property ReinsertFactor must be Tools::VT_DOUBLE", 
-							"IndexProperty_GetReinsertFactor");
+					"Property ReinsertFactor must be Tools::VT_DOUBLE",
+					"IndexProperty_GetReinsertFactor");
 			return 0;
 		}
-		
+
 		return var.m_val.dblVal;
 	}
-	
+
 	// return nothing for an error
 	Error_PushError(RT_Failure, 
-					"Property ReinsertFactor was empty", 
-					"IndexProperty_GetReinsertFactor");
+			"Property ReinsertFactor was empty",
+			"IndexProperty_GetReinsertFactor");
 	return 0;
 }
 
 SIDX_C_DLL RTError IndexProperty_SetFileName( IndexPropertyH hProp, 
-											const char* value)
+		const char* value)
 {
 	VALIDATE_POINTER1(	hProp, 
-						"IndexProperty_SetFileName", 
-						RT_Failure);	
+			"IndexProperty_SetFileName",
+			RT_Failure);
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
 
 	try
@@ -2204,26 +2206,26 @@ SIDX_C_DLL RTError IndexProperty_SetFileName( IndexPropertyH hProp,
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetFileName");
+				e.what().c_str(),
+				"IndexProperty_SetFileName");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetFileName");
+				e.what(),
+				"IndexProperty_SetFileName");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetFileName");
+				"Unknown Error",
+				"IndexProperty_SetFileName");
 		return RT_Failure;		  
 	}
 	return RT_None;
 }
 
 SIDX_C_DLL char* IndexProperty_GetFileName(IndexPropertyH hProp)
-{
+		{
 	VALIDATE_POINTER1(hProp, "IndexProperty_GetFileName", 0);
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
 
@@ -2234,28 +2236,28 @@ SIDX_C_DLL char* IndexProperty_GetFileName(IndexPropertyH hProp)
 	{
 		if (var.m_varType != Tools::VT_PCHAR) {
 			Error_PushError(RT_Failure, 
-							"Property FileName must be Tools::VT_PCHAR", 
-							"IndexProperty_GetFileName");
+					"Property FileName must be Tools::VT_PCHAR",
+					"IndexProperty_GetFileName");
 			return NULL;
 		}
-		
+
 		return STRDUP(var.m_val.pcVal);
 	}
-	
+
 	// return nothing for an error
 	Error_PushError(RT_Failure, 
-					"Property FileName was empty", 
-					"IndexProperty_GetFileName");
+			"Property FileName was empty",
+			"IndexProperty_GetFileName");
 	return NULL;
-}
+		}
 
 
 SIDX_C_DLL RTError IndexProperty_SetFileNameExtensionDat( IndexPropertyH hProp, 
-														const char* value)
+		const char* value)
 {
 	VALIDATE_POINTER1(	hProp, 
-						"IndexProperty_SetFileNameExtensionDat", 
-						RT_Failure);	
+			"IndexProperty_SetFileNameExtensionDat",
+			RT_Failure);
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
 
 	try
@@ -2268,26 +2270,26 @@ SIDX_C_DLL RTError IndexProperty_SetFileNameExtensionDat( IndexPropertyH hProp,
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetFileNameExtensionDat");
+				e.what().c_str(),
+				"IndexProperty_SetFileNameExtensionDat");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetFileNameExtensionDat");
+				e.what(),
+				"IndexProperty_SetFileNameExtensionDat");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetFileNameExtensionDat");
+				"Unknown Error",
+				"IndexProperty_SetFileNameExtensionDat");
 		return RT_Failure;		  
 	}
 	return RT_None;
 }
 
 SIDX_C_DLL char* IndexProperty_GetFileNameExtensionDat(IndexPropertyH hProp)
-{
+		{
 	VALIDATE_POINTER1(hProp, "IndexProperty_GetFileNameExtensionDat", 0);
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
 
@@ -2298,27 +2300,27 @@ SIDX_C_DLL char* IndexProperty_GetFileNameExtensionDat(IndexPropertyH hProp)
 	{
 		if (var.m_varType != Tools::VT_PCHAR) {
 			Error_PushError(RT_Failure, 
-							"Property FileNameDat must be Tools::VT_PCHAR", 
-							"IndexProperty_GetFileNameExtensionDat");
+					"Property FileNameDat must be Tools::VT_PCHAR",
+					"IndexProperty_GetFileNameExtensionDat");
 			return NULL;
 		}
-		
+
 		return STRDUP(var.m_val.pcVal);
 	}
-	
+
 	// return nothing for an error
 	Error_PushError(RT_Failure, 
-					"Property FileNameDat was empty", 
-					"IndexProperty_GetFileNameExtensionDat");
+			"Property FileNameDat was empty",
+			"IndexProperty_GetFileNameExtensionDat");
 	return NULL;
-}
+		}
 
 SIDX_C_DLL RTError IndexProperty_SetFileNameExtensionIdx( IndexPropertyH hProp, 
-														const char* value)
+		const char* value)
 {
 	VALIDATE_POINTER1(	hProp, 
-						"IndexProperty_SetFileNameExtensionIdx", 
-						RT_Failure);	
+			"IndexProperty_SetFileNameExtensionIdx",
+			RT_Failure);
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
 
 	try
@@ -2331,26 +2333,26 @@ SIDX_C_DLL RTError IndexProperty_SetFileNameExtensionIdx( IndexPropertyH hProp,
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetFileNameExtensionIdx");
+				e.what().c_str(),
+				"IndexProperty_SetFileNameExtensionIdx");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetFileNameExtensionIdx");
+				e.what(),
+				"IndexProperty_SetFileNameExtensionIdx");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetFileNameExtensionIdx");
+				"Unknown Error",
+				"IndexProperty_SetFileNameExtensionIdx");
 		return RT_Failure;		  
 	}
 	return RT_None;
 }
 
 SIDX_C_DLL char* IndexProperty_GetFileNameExtensionIdx(IndexPropertyH hProp)
-{
+		{
 	VALIDATE_POINTER1(hProp, "IndexProperty_GetFileNameExtensionIdx", 0);
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
 
@@ -2361,23 +2363,23 @@ SIDX_C_DLL char* IndexProperty_GetFileNameExtensionIdx(IndexPropertyH hProp)
 	{
 		if (var.m_varType != Tools::VT_PCHAR) {
 			Error_PushError(RT_Failure, 
-							"Property FileNameIdx must be Tools::VT_PCHAR", 
-							"IndexProperty_GetFileNameExtensionIdx");
+					"Property FileNameIdx must be Tools::VT_PCHAR",
+					"IndexProperty_GetFileNameExtensionIdx");
 			return NULL;
 		}
-		
+
 		return STRDUP(var.m_val.pcVal);
 	}
-	
+
 	// return nothing for an error
 	Error_PushError(RT_Failure, 
-					"Property FileNameIdx was empty", 
-					"IndexProperty_GetFileNameExtensionIdx");
+			"Property FileNameIdx was empty",
+			"IndexProperty_GetFileNameExtensionIdx");
 	return NULL;
-}
+		}
 
 SIDX_C_DLL RTError IndexProperty_SetCustomStorageCallbacksSize(IndexPropertyH hProp, 
-												uint32_t value)
+		uint32_t value)
 {
 	VALIDATE_POINTER1(hProp, "IndexProperty_SetCustomStorageCallbacksSize", RT_Failure);	   
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
@@ -2391,19 +2393,19 @@ SIDX_C_DLL RTError IndexProperty_SetCustomStorageCallbacksSize(IndexPropertyH hP
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetCustomStorageCallbacksSize");
+				e.what().c_str(),
+				"IndexProperty_SetCustomStorageCallbacksSize");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetCustomStorageCallbacksSize");
+				e.what(),
+				"IndexProperty_SetCustomStorageCallbacksSize");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetCustomStorageCallbacksSize");
+				"Unknown Error",
+				"IndexProperty_SetCustomStorageCallbacksSize");
 		return RT_Failure;		  
 	}
 	return RT_None;
@@ -2421,78 +2423,78 @@ SIDX_C_DLL uint32_t IndexProperty_GetCustomStorageCallbacksSize(IndexPropertyH h
 	{
 		if (var.m_varType != Tools::VT_ULONG) {
 			Error_PushError(RT_Failure, 
-							"Property CustomStorageCallbacksSize must be Tools::VT_ULONG", 
-							"IndexProperty_GetCustomStorageCallbacksSize");
+					"Property CustomStorageCallbacksSize must be Tools::VT_ULONG",
+					"IndexProperty_GetCustomStorageCallbacksSize");
 			return 0;
 		}
-		
+
 		return var.m_val.ulVal;
 	}
-	
+
 	// return nothing for an error
 	Error_PushError(RT_Failure, 
-					"Property CustomStorageCallbacksSize was empty", 
-					"IndexProperty_GetCustomStorageCallbacksSize");
+			"Property CustomStorageCallbacksSize was empty",
+			"IndexProperty_GetCustomStorageCallbacksSize");
 	return 0;
 }
 
 SIDX_C_DLL RTError IndexProperty_SetCustomStorageCallbacks( IndexPropertyH hProp, 
-														const void* value)
+		const void* value)
 {
 	VALIDATE_POINTER1(	hProp, 
-						"IndexProperty_SetCustomStorageCallbacks", 
-						RT_Failure);	
+			"IndexProperty_SetCustomStorageCallbacks",
+			RT_Failure);
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
 
-    // check if the CustomStorageCallbacksSize is alright, so we can make a copy of the passed in structure
-  	Tools::Variant varSize;
-    varSize = prop->getProperty("CustomStorageCallbacksSize");
-    if ( varSize.m_val.ulVal != sizeof(SpatialIndex::StorageManager::CustomStorageManagerCallbacks) )
-    {
-        std::ostringstream ss;
-        ss << "The supplied storage callbacks size is wrong, expected "
-            << sizeof(SpatialIndex::StorageManager::CustomStorageManagerCallbacks) 
-           << ", got " << varSize.m_val.ulVal;
+	// check if the CustomStorageCallbacksSize is alright, so we can make a copy of the passed in structure
+	Tools::Variant varSize;
+	varSize = prop->getProperty("CustomStorageCallbacksSize");
+	if ( varSize.m_val.ulVal != sizeof(SpatialIndex::StorageManager::CustomStorageManagerCallbacks) )
+	{
+		std::ostringstream ss;
+		ss << "The supplied storage callbacks size is wrong, expected "
+				<< sizeof(SpatialIndex::StorageManager::CustomStorageManagerCallbacks)
+				<< ", got " << varSize.m_val.ulVal;
 		Error_PushError(RT_Failure, 
-						ss.str().c_str(), 
-						"IndexProperty_SetCustomStorageCallbacks");
+				ss.str().c_str(),
+				"IndexProperty_SetCustomStorageCallbacks");
 		return RT_Failure;
-    }
+	}
 
-    try
+	try
 	{
 		Tools::Variant var;
 		var.m_varType = Tools::VT_PVOID;
-        var.m_val.pvVal = value ? 
-                            new SpatialIndex::StorageManager::CustomStorageManagerCallbacks( 
-                                    *static_cast<const SpatialIndex::StorageManager::CustomStorageManagerCallbacks*>(value) 
-                                    ) 
-                            : 0;
+		var.m_val.pvVal = value ?
+				new SpatialIndex::StorageManager::CustomStorageManagerCallbacks(
+						*static_cast<const SpatialIndex::StorageManager::CustomStorageManagerCallbacks*>(value)
+				)
+		: 0;
 		prop->setProperty("CustomStorageCallbacks", var);
 
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetCustomStorageCallbacks");
+				e.what().c_str(),
+				"IndexProperty_SetCustomStorageCallbacks");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetCustomStorageCallbacks");
+				e.what(),
+				"IndexProperty_SetCustomStorageCallbacks");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetCustomStorageCallbacks");
+				"Unknown Error",
+				"IndexProperty_SetCustomStorageCallbacks");
 		return RT_Failure;		  
 	}
 	return RT_None;
 }
 
 SIDX_C_DLL void* IndexProperty_GetCustomStorageCallbacks(IndexPropertyH hProp)
-{
+		{
 	VALIDATE_POINTER1(hProp, "IndexProperty_GetCustomStorageCallbacks", 0);
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
 
@@ -2503,23 +2505,23 @@ SIDX_C_DLL void* IndexProperty_GetCustomStorageCallbacks(IndexPropertyH hProp)
 	{
 		if (var.m_varType != Tools::VT_PVOID) {
 			Error_PushError(RT_Failure, 
-							"Property CustomStorageCallbacks must be Tools::VT_PVOID", 
-							"IndexProperty_GetCustomStorageCallbacks");
+					"Property CustomStorageCallbacks must be Tools::VT_PVOID",
+					"IndexProperty_GetCustomStorageCallbacks");
 			return NULL;
 		}
-		
+
 		return var.m_val.pvVal;
 	}
-	
+
 	// return nothing for an error
 	Error_PushError(RT_Failure, 
-					"Property CustomStorageCallbacks was empty", 
-					"IndexProperty_GetCustomStorageCallbacks");
+			"Property CustomStorageCallbacks was empty",
+			"IndexProperty_GetCustomStorageCallbacks");
 	return NULL;
-}
+		}
 
 SIDX_C_DLL RTError IndexProperty_SetIndexID(IndexPropertyH hProp, 
-											int64_t value)
+		int64_t value)
 {
 	VALIDATE_POINTER1(hProp, "IndexProperty_SetIndexID", RT_Failure);	 
 	Tools::PropertySet* prop = static_cast<Tools::PropertySet*>(hProp);
@@ -2533,19 +2535,19 @@ SIDX_C_DLL RTError IndexProperty_SetIndexID(IndexPropertyH hProp,
 	} catch (Tools::Exception& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what().c_str(), 
-						"IndexProperty_SetIndexID");
+				e.what().c_str(),
+				"IndexProperty_SetIndexID");
 		return RT_Failure;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
-						e.what(), 
-						"IndexProperty_SetIndexID");
+				e.what(),
+				"IndexProperty_SetIndexID");
 		return RT_Failure;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
-						"Unknown Error", 
-						"IndexProperty_SetIndexID");
+				"Unknown Error",
+				"IndexProperty_SetIndexID");
 		return RT_Failure;		  
 	}
 	return RT_None;
@@ -2563,35 +2565,35 @@ SIDX_C_DLL int64_t IndexProperty_GetIndexID(IndexPropertyH hProp)
 	{
 		if (var.m_varType != Tools::VT_LONGLONG) {
 			Error_PushError(RT_Failure, 
-							"Property IndexIdentifier must be Tools::VT_LONGLONG", 
-							"IndexProperty_GetIndexID");
+					"Property IndexIdentifier must be Tools::VT_LONGLONG",
+					"IndexProperty_GetIndexID");
 			return 0;
 		}
-		
+
 		return var.m_val.llVal;
 	}
-	
+
 	// return nothing for an error
 	Error_PushError(RT_Failure, 
-					"Property IndexIdentifier was empty", 
-					"IndexProperty_GetIndexID");
+			"Property IndexIdentifier was empty",
+			"IndexProperty_GetIndexID");
 	return 0;
 }
 
 SIDX_C_DLL void* SIDX_NewBuffer(size_t length)
-{
-    return new char[length];
-}
-    
+		{
+	return new char[length];
+		}
+
 SIDX_C_DLL void SIDX_DeleteBuffer(void* buffer)
 {
-    delete []buffer;
+	delete []buffer;
 }
 
 
 SIDX_C_DLL char* SIDX_Version()
-{
-	
+		{
+
 	std::ostringstream ot;
 
 #ifdef SIDX_RELEASE_NAME
@@ -2602,6 +2604,6 @@ SIDX_C_DLL char* SIDX_Version()
 
 	std::string out(ot.str());
 	return STRDUP(out.c_str());
-	
-}
+
+		}
 IDX_C_END
