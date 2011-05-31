@@ -613,31 +613,14 @@ double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, uint64_t& id1
 		NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
 		retDist = root1->m_nodeMBR.getHausDistLB(root2->m_nodeMBR);
 	} else if (mode==2) {
-		int num_mbrs = 40;
-		this->selectMBRs(num_mbrs);
-		queryRTreePtr->selectMBRs(num_mbrs);
 		double max = std::numeric_limits<double>::min();
 
 		Region r = Region(2);
-		//for (int i=0; i<this->m_vec_pMBR.size(); i++) {
 		for (int i=this->m_vec_pMBR.size()-1; i>=0; i--) {
 			this->m_vec_pMBR[i]->getMBR(r);
 			max = std::max(max, r.getHausDistLB(queryRTreePtr->m_vec_pMBR,max));
 		}
 
-		/*
-		for (int i=0; i<this->m_vec_pMBR.size(); i++) {
-			delete this->m_vec_pMBR.at(i);
-		}
-
-		for (int i=0; i<queryRTreePtr->m_vec_pMBR.size(); i++) {
-			delete queryRTreePtr->m_vec_pMBR.at(i);
-		}
-
-
-		this->m_vec_pMBR.clear();
-		queryRTreePtr->m_vec_pMBR.clear();
-		*/
 
 		retDist = max;
 	} else if (mode==3) {
