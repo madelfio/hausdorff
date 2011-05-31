@@ -775,6 +775,7 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 			delete pShape;
 		}
 
+		if (pFirst->m_pEntry != NULL) delete pFirst->m_pEntry;
 		delete pFirst;
 	}
 
