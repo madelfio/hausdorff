@@ -553,16 +553,21 @@ SIDX_C_DLL double Index_Hausdorff(IndexH index,
 	Index* idx = static_cast<Index*>(index);
 	Index* idx2 = static_cast<Index*>(index2);
 
-	IdVisitor* visitor = new IdVisitor;
+  IdVisitor* visitor = 0;
+  if (mode == 0) {
+  	IdVisitor* visitor = new IdVisitor;
+  }
+    
 	try {	 
     double h = idx->index().hausdorff(idx2->index(), 
                                       *id1,
                                       *id2,
                                       mode,
                                       *visitor);
-    std::cout << *id1 << std::endl;
-    *traversal_cost = visitor->getTraversalCost();
-		delete visitor;
+    if (mode == 0) {
+      *traversal_cost = visitor->getTraversalCost();
+      delete visitor;
+    }
     return h;
 
 	} catch (Tools::Exception& e)
@@ -570,20 +575,26 @@ SIDX_C_DLL double Index_Hausdorff(IndexH index,
 		Error_PushError(RT_Failure, 
 						e.what().c_str(), 
 						"Index_Hausdorff");
-		delete visitor;
+    if (mode == 0) {
+      delete visitor;
+    }
 		return 0;
 	} catch (std::exception const& e)
 	{
 		Error_PushError(RT_Failure, 
 						e.what(), 
 						"Index_Hausdorff");
-		delete visitor;
+    if (mode == 0) {
+      delete visitor;
+    }
 		return 0;
 	} catch (...) {
 		Error_PushError(RT_Failure, 
 						"Unknown Error", 
 						"Index_Hausdorff");
-		delete visitor;
+    if (mode == 0) {
+      delete visitor;
+    }
 		return 0;		  
 	}
 	return 0;
@@ -592,7 +603,7 @@ SIDX_C_DLL double Index_Hausdorff(IndexH index,
 SIDX_DLL void Index_SelectMBRs(IndexH index,
                                int numMBRs)
 {
-  VALIDATE_POINTER1(index, "Index_SelectMBRs", RT_Failure);
+  VALIDATE_POINTER0(index, "Index_SelectMBRs");
   Index* idx = static_cast<Index*>(index);
 
   try {
@@ -606,7 +617,7 @@ SIDX_DLL void Index_SelectMBRs(IndexH index,
 
 SIDX_DLL void Index_ClearMBRs(IndexH index)
 {
-  VALIDATE_POINTER1(index, "Index_ClearMBRs", RT_Failure);
+  VALIDATE_POINTER0(index, "Index_ClearMBRs");
   Index* idx = static_cast<Index*>(index);
 
   try {
