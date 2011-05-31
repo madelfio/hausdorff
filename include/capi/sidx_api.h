@@ -97,7 +97,13 @@ SIDX_DLL double Index_Hausdorff(IndexH index,
                                 IndexH index2,
                                 uint64_t& id1,
                                 uint64_t& id2,
+                                int* traversal_cost,
                                 int mode);
+
+SIDX_DLL void Index_SelectMBRs(IndexH index,
+                               int numMBRs);
+
+SIDX_DLL void Index_ClearMBRs(IndexH index);
 
 SIDX_DLL RTError Index_GetBounds(	IndexH index,
 									double** ppdMin,
