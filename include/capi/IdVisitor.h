@@ -33,6 +33,7 @@ private:
     std::vector<uint64_t> m_vector;
     uint64_t nResults;
     double m_distance;
+    int m_traversalCost;
 
 public:
 
@@ -45,6 +46,8 @@ public:
     void visitNode(const SpatialIndex::INode& n);
     void visitData(const SpatialIndex::IData& d);
     void visitData(std::vector<const SpatialIndex::IData*>& v);
+    int getTraversalCost();
+
 
     double getDistance();
     void setDistance(double d);

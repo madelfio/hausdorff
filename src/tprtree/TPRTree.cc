@@ -402,6 +402,11 @@ double SpatialIndex::TPRTree::TPRTree::hausdorff(ISpatialIndex& query, uint64_t&
   //throw Tools::IllegalArgumentException("MDA: Got Here!");
 }
 
+void SpatialIndex::TPRTree::TPRTree::clearMBRs()
+{
+
+}
+
 void SpatialIndex::TPRTree::TPRTree::selectMBRs(const int num) {
 
 }

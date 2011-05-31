@@ -703,6 +703,11 @@ double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, uint64_t& id1
 	}
 }
 
+
+
+
+
+
 /*
  * 	Select at least "num" MBRs that cover the whole point set
  *  but have a small total area
@@ -796,6 +801,16 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 		delete e;
 	}
 }
+
+void SpatialIndex::RTree::RTree::clearMBRs() {
+	for (int i=0; i<m_vec_pMBR.size(); i++) {
+		delete m_vec_pMBR.at(i);
+	}
+
+
+	m_vec_pMBR.clear();
+}
+
 
 void SpatialIndex::RTree::RTree::selfJoinQuery(const IShape& query, IVisitor& v)
 {
