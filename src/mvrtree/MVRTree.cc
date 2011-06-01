@@ -391,6 +391,10 @@ void SpatialIndex::MVRTree::MVRTree::selectMBRs(const int num) {
 
 }
 
+void SpatialIndex::MVRTree::MVRTree::updatePointCount() {
+
+}
+
 void SpatialIndex::MVRTree::MVRTree::selfJoinQuery(const IShape& query, IVisitor& v)
 {
 	throw Tools::IllegalStateException("selfJoinQuery: not impelmented yet.");

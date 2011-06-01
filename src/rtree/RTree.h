@@ -82,6 +82,10 @@ namespace SpatialIndex
 			virtual void selectMBRs(const int numMBRs);
 			virtual void clearMBRs();
 
+			virtual void updatePointCount();
+
+			int m_pointCount;
+
 		private:
 			void initNew(Tools::PropertySet&);
 			void initOld(Tools::PropertySet& ps);
@@ -147,6 +151,7 @@ namespace SpatialIndex
 			std::vector<Tools::SmartPointer<ICommand> > m_deleteNodeCommands;
 
 			std::vector<const Region*> m_vec_pMBR;
+			std::vector<int> m_vec_pointCount;
 
 #ifdef HAVE_PTHREAD_H
 			pthread_rwlock_t m_rwLock;

@@ -200,6 +200,9 @@ namespace SpatialIndex
 		virtual double hausdorff(ISpatialIndex& query, uint64_t& id1, uint64_t& id2, int mode, IVisitor& v) = 0;
 		virtual void selectMBRs(const int numMBRs) = 0;
 		virtual void clearMBRs() = 0;
+		virtual  void updatePointCount() = 0;
+
+
 		virtual void selfJoinQuery(const IShape& s, IVisitor& v) = 0;
 		virtual void queryStrategy(IQueryStrategy& qs) = 0;
 		virtual void getIndexProperties(Tools::PropertySet& out) const = 0;

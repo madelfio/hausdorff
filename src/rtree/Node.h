@@ -66,6 +66,9 @@ namespace SpatialIndex
 			virtual bool isIndex() const;
 			virtual bool isLeaf() const;
 
+			int m_pointCount;
+			int updatePointCount();
+
 		private:
 			Node();
 			Node(RTree* pTree, id_type id, uint32_t level, uint32_t capacity);

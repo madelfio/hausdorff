@@ -407,6 +407,10 @@ void SpatialIndex::TPRTree::TPRTree::clearMBRs()
 
 }
 
+void SpatialIndex::TPRTree::TPRTree::updatePointCount() {
+
+}
+
 void SpatialIndex::TPRTree::TPRTree::selectMBRs(const int num) {
 
 }

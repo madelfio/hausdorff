@@ -52,6 +52,23 @@ uint32_t Node::getByteArraySize()
 		(2 * m_pTree->m_dimension * sizeof(double)));
 }
 
+int Node::updatePointCount() {
+
+	if (this->isLeaf()) {
+		this->m_pointCount = this->getChildrenCount();
+
+	} else {
+		this->m_pointCount = 0;
+		for (uint32_t u32Child = 0; u32Child < m_children; ++u32Child)
+		{
+			NodePtr cPtr = this->m_pTree->readNode(this->getChildIdentifier(u32Child));
+			this->m_pointCount += cPtr->updatePointCount();
+		}
+	}
+
+	return this->m_pointCount;
+}
+
 void Node::loadFromByteArray(const byte* ptr)
 {
 	m_nodeMBR = m_pTree->m_infiniteRegion;
@@ -64,6 +81,9 @@ void Node::loadFromByteArray(const byte* ptr)
 
 	memcpy(&m_children, ptr, sizeof(uint32_t));
 	ptr += sizeof(uint32_t);
+
+	memcpy(&m_pointCount, ptr, sizeof(int));
+	ptr += sizeof(int);
 
 	for (uint32_t u32Child = 0; u32Child < m_children; ++u32Child)
 	{
@@ -121,6 +141,9 @@ void Node::storeToByteArray(byte** data, uint32_t& len)
 
 	memcpy(ptr, &m_children, sizeof(uint32_t));
 	ptr += sizeof(uint32_t);
+
+	memcpy(ptr, &m_pointCount, sizeof(int));
+	ptr += sizeof(int);
 
 	for (uint32_t u32Child = 0; u32Child < m_children; ++u32Child)
 	{

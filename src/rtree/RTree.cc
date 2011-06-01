@@ -359,7 +359,8 @@ SpatialIndex::RTree::RTree::RTree(IStorageManager& sm, Tools::PropertySet& ps) :
 	m_pointPool(500),
 	m_regionPool(1000),
 	m_indexPool(100),
-	m_leafPool(100)
+	m_leafPool(100),
+	m_pointCount(0)
 {
 #ifdef HAVE_PTHREAD_H
 	pthread_rwlock_init(&m_rwLock, NULL);
@@ -688,7 +689,10 @@ double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, uint64_t& id1
 
 
 
-
+void SpatialIndex::RTree::RTree::updatePointCount() {
+	NodePtr root = readNode(this->m_rootID);
+	this->m_pointCount = root->updatePointCount();
+}
 
 
 /*
@@ -708,6 +712,7 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 
 
 	m_vec_pMBR.clear();
+	m_vec_pointCount.clear();
 
 
 	NodePtr root = readNode(this->m_rootID);
@@ -718,6 +723,7 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 		Region *pMBR = new Region(2);
 		pShape->getMBR(*pMBR);
 		m_vec_pMBR.push_back(pMBR);
+		m_vec_pointCount.push_back(root->m_pointCount);
 		delete pShape;
 
 		return;
@@ -753,30 +759,20 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 						*(n->m_ptrMBR[cChild]),
 						n->m_pIdentifier[cChild]);
 
+
+
 				NNEntry *pEntry = new NNEntry(n->m_pIdentifier[cChild], e, -area);
+
+
 				queue.push(pEntry);
 			}
 		} else {
 			for (uint32_t cChild = 0; cChild < n->m_children; ++cChild)
 			{
-				//double area = n->m_ptrMBR[cChild]->getArea();
-				//Data* e = new Data(n->m_pDataLength[cChild],
-						//n->m_pData[cChild],
-						//*(n->m_ptrMBR[cChild]),
-						//n->m_pIdentifier[cChild]);
-
 				Region *pMBR = new Region(*(n->m_ptrMBR[cChild]));
 				m_vec_pMBR.push_back(pMBR);
-
-				//std::cout << "Adding Point ";
-				//std::cout << pMBR->m_pLow[0] << " " << pMBR->m_pLow[1] << " ";
-				//std::cout << pMBR->m_pHigh[0] << " " << pMBR->m_pHigh[1] << std::endl;
-
-				//NNEntry *pEntry = new NNEntry(n->m_pIdentifier[cChild], e, -area);
-				//queue.push(pEntry);
+				m_vec_pointCount.push_back(1);
 			}
-
-
 
 			//IShape *pShape;
 			//n->getShape(&pShape);
@@ -794,11 +790,13 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 	{
 		NNEntry* e = queue.top(); queue.pop();
 		if (e->m_pEntry != 0) {
+			NodePtr n = readNode(e->m_id);
 			IShape *pShape;
 			e->m_pEntry->getShape(&pShape);
 			Region *pMBR = new Region(2);
 			pShape->getMBR(*pMBR);
 			m_vec_pMBR.push_back(pMBR);
+			m_vec_pointCount.push_back(n->m_pointCount);
 			delete pShape;
 			delete e->m_pEntry;
 		}

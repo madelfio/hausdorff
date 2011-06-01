@@ -634,6 +634,9 @@ double Region::getHausDistLB(const std::vector<const Region*> vec_pMBR, double m
 	return std::sqrt(max);
 }
 
+
+
+
 /*
  * Computing HausDistUB from an MBR to another MBR or a point.
  *
