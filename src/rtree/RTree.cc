@@ -687,7 +687,93 @@ double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, uint64_t& id1
 }
 
 
+double SpatialIndex::RTree::RTree::mhausdorff(ISpatialIndex& query, uint64_t& id1, uint64_t& id2, int mode, IVisitor& v)
+{
+	double retDist;
+	RTree *queryRTreePtr = dynamic_cast<RTree*>(&query);
 
+	//std::cout << *queryRTreePtr << std::endl;
+	if (mode==0) {
+		retDist = this->mhausdorff(query, id1, id2, v);
+	} else if (mode==1) {
+		NodePtr root1 = readNode(this->m_rootID);
+		NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
+    // UPDATE WITH NEW FUNCTION NAME
+		retDist = root1->m_nodeMBR.getHausDistLB(root2->m_nodeMBR);
+	} else if (mode==2) {
+		double max = std::numeric_limits<double>::min();
+
+		Region r = Region(2);
+		for (int i=this->m_vec_pMBR.size()-1; i>=0; i--) {
+			this->m_vec_pMBR[i]->getMBR(r);
+      // UPDATE TO DO WEIGHTED AVERAGING
+			max = std::max(max, r.getHausDistLB(queryRTreePtr->m_vec_pMBR,max));
+		}
+
+		retDist = max;
+	} else if (mode==3) {
+		NodePtr root1 = readNode(this->m_rootID);
+		NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
+    // UPDATE WITH NEW FUNCTION NAME
+		retDist = root1->m_nodeMBR.getMinimumDistance(root2->m_nodeMBR);
+	}
+
+	return retDist;
+}
+
+double SpatialIndex::RTree::RTree::mhausdorff(ISpatialIndex& query, uint64_t& id1, uint64_t& id2, IVisitor& v)
+{
+
+#ifdef HAVE_PTHREAD_H
+	Tools::SharedLock lock(&m_rwLock);
+#else
+	if (m_rwLock == false) m_rwLock = true;
+	else throw Tools::ResourceLockedException("nearestNeighborQuery: cannot acquire a shared lock");
+#endif
+
+  try {
+    // COMPUTE HAUSDORFF HERE
+    std::queue<id_type> node_queue;
+
+    float hausdorff = 0.0;
+    float total_dist = 0.0;
+    int point_count = 0;
+    node_queue.push(m_rootID);
+    while (! node_queue.empty())
+    {
+      id_type top = node_queue.front();
+      node_queue.pop();
+      NodePtr n = readNode(top);
+      for (uint32_t cChild = 0; cChild < n->m_children; ++cChild)
+      {
+        if (n->m_level == 0)
+        {
+          Point p = Point(n->m_ptrMBR[cChild]->m_pLow,2);
+          query.nearestNeighborQuery(1, p, v);
+
+          total_dist += v.getDistance();
+          point_count++;
+        }
+        else {
+          node_queue.push(n->m_pIdentifier[cChild]);
+        }
+      }
+    }
+    hausdorff = total_dist / point_count;
+    return hausdorff;
+
+#ifndef HAVE_PTHREAD_H
+		m_rwLock = false;
+#endif
+	}
+	catch (...)
+	{
+#ifndef HAVE_PTHREAD_H
+		m_rwLock = false;
+#endif
+		throw;
+	}
+}
 
 
 
