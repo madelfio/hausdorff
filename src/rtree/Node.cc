@@ -56,7 +56,7 @@ int Node::updatePointCount() {
 
 	if (this->isLeaf()) {
 		this->m_pointCount = this->getChildrenCount();
-		std::cout << this->m_level << " " << this->m_children << std::endl;
+		//std::cout << this->m_level << " " << this->m_children << std::endl;
 
 	} else {
 		this->m_pointCount = 0;
