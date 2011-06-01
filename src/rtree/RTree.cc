@@ -33,7 +33,7 @@
 using namespace SpatialIndex::RTree;
 
 SpatialIndex::RTree::Data::Data(uint32_t len, byte* pData, Region& r, id_type id)
-	: m_id(id), m_region(r), m_pData(0), m_dataLength(len)
+: m_id(id), m_region(r), m_pData(0), m_dataLength(len)
 {
 	if (m_dataLength > 0)
 	{
@@ -77,10 +77,10 @@ void SpatialIndex::RTree::Data::getData(uint32_t& len, byte** data) const
 uint32_t SpatialIndex::RTree::Data::getByteArraySize()
 {
 	return
-		sizeof(id_type) +
-		sizeof(uint32_t) +
-		m_dataLength +
-		m_region.getByteArraySize();
+	sizeof(id_type) +
+	sizeof(uint32_t) +
+	m_dataLength +
+	m_region.getByteArraySize();
 }
 
 void SpatialIndex::RTree::Data::loadFromByteArray(const byte* ptr)
@@ -139,13 +139,13 @@ SpatialIndex::ISpatialIndex* SpatialIndex::RTree::returnRTree(SpatialIndex::ISto
 }
 
 SpatialIndex::ISpatialIndex* SpatialIndex::RTree::createNewRTree(
-	SpatialIndex::IStorageManager& sm,
-	double fillFactor,
-	uint32_t indexCapacity,
-	uint32_t leafCapacity,
-	uint32_t dimension,
-	RTreeVariant rv,
-	id_type& indexIdentifier)
+		SpatialIndex::IStorageManager& sm,
+		double fillFactor,
+		uint32_t indexCapacity,
+		uint32_t leafCapacity,
+		uint32_t dimension,
+		RTreeVariant rv,
+		id_type& indexIdentifier)
 {
 	Tools::Variant var;
 	Tools::PropertySet ps;
@@ -180,15 +180,15 @@ SpatialIndex::ISpatialIndex* SpatialIndex::RTree::createNewRTree(
 }
 
 SpatialIndex::ISpatialIndex* SpatialIndex::RTree::createAndBulkLoadNewRTree(
-	BulkLoadMethod m,
-	IDataStream& stream,
-	SpatialIndex::IStorageManager& sm,
-	double fillFactor,
-	uint32_t indexCapacity,
-	uint32_t leafCapacity,
-	uint32_t dimension,
-	SpatialIndex::RTree::RTreeVariant rv,
-	id_type& indexIdentifier)
+		BulkLoadMethod m,
+		IDataStream& stream,
+		SpatialIndex::IStorageManager& sm,
+		double fillFactor,
+		uint32_t indexCapacity,
+		uint32_t leafCapacity,
+		uint32_t dimension,
+		SpatialIndex::RTree::RTreeVariant rv,
+		id_type& indexIdentifier)
 {
 	SpatialIndex::ISpatialIndex* tree = createNewRTree(sm, fillFactor, indexCapacity, leafCapacity, dimension, rv, indexIdentifier);
 
@@ -211,11 +211,11 @@ SpatialIndex::ISpatialIndex* SpatialIndex::RTree::createAndBulkLoadNewRTree(
 }
 
 SpatialIndex::ISpatialIndex* SpatialIndex::RTree::createAndBulkLoadNewRTree(
-	BulkLoadMethod m,
-	IDataStream& stream,
-	SpatialIndex::IStorageManager& sm,
-	Tools::PropertySet& ps,
-	id_type& indexIdentifier)
+		BulkLoadMethod m,
+		IDataStream& stream,
+		SpatialIndex::IStorageManager& sm,
+		Tools::PropertySet& ps,
+		id_type& indexIdentifier)
 {
 	Tools::Variant var;
 	RTreeVariant rv;
@@ -227,10 +227,10 @@ SpatialIndex::ISpatialIndex* SpatialIndex::RTree::createAndBulkLoadNewRTree(
 	if (var.m_varType != Tools::VT_EMPTY)
 	{
 		if (
-			var.m_varType != Tools::VT_LONG ||
-			(var.m_val.lVal != RV_LINEAR &&
-			var.m_val.lVal != RV_QUADRATIC &&
-			var.m_val.lVal != RV_RSTAR))
+				var.m_varType != Tools::VT_LONG ||
+				(var.m_val.lVal != RV_LINEAR &&
+						var.m_val.lVal != RV_QUADRATIC &&
+						var.m_val.lVal != RV_RSTAR))
 			throw Tools::IllegalArgumentException("createAndBulkLoadNewRTree: Property TreeVariant must be Tools::VT_LONG and of RTreeVariant type");
 
 		rv = static_cast<RTreeVariant>(var.m_val.lVal);
@@ -242,16 +242,16 @@ SpatialIndex::ISpatialIndex* SpatialIndex::RTree::createAndBulkLoadNewRTree(
 	var = ps.getProperty("FillFactor");
 	if (var.m_varType != Tools::VT_EMPTY)
 	{
-	    if (var.m_varType != Tools::VT_DOUBLE)
-            throw Tools::IllegalArgumentException("createAndBulkLoadNewRTree: Property FillFactor was not of type Tools::VT_DOUBLE");
-        
-        if (var.m_val.dblVal <= 0.0)
-            throw Tools::IllegalArgumentException("createAndBulkLoadNewRTree: Property FillFactor was less than 0.0");
-        
-        if (((rv == RV_LINEAR || rv == RV_QUADRATIC) && var.m_val.dblVal > 0.5))
-            throw Tools::IllegalArgumentException( "createAndBulkLoadNewRTree: Property FillFactor must be in range (0.0, 0.5) for LINEAR or QUADRATIC index types");
-        if ( var.m_val.dblVal >= 1.0)
-            throw Tools::IllegalArgumentException("createAndBulkLoadNewRTree: Property FillFactor must be in range (0.0, 1.0) for RSTAR index type");
+		if (var.m_varType != Tools::VT_DOUBLE)
+			throw Tools::IllegalArgumentException("createAndBulkLoadNewRTree: Property FillFactor was not of type Tools::VT_DOUBLE");
+
+		if (var.m_val.dblVal <= 0.0)
+			throw Tools::IllegalArgumentException("createAndBulkLoadNewRTree: Property FillFactor was less than 0.0");
+
+		if (((rv == RV_LINEAR || rv == RV_QUADRATIC) && var.m_val.dblVal > 0.5))
+			throw Tools::IllegalArgumentException( "createAndBulkLoadNewRTree: Property FillFactor must be in range (0.0, 0.5) for LINEAR or QUADRATIC index types");
+		if ( var.m_val.dblVal >= 1.0)
+			throw Tools::IllegalArgumentException("createAndBulkLoadNewRTree: Property FillFactor must be in range (0.0, 1.0) for RSTAR index type");
 		fillFactor = var.m_val.dblVal;
 	}
 
@@ -344,23 +344,23 @@ SpatialIndex::ISpatialIndex* SpatialIndex::RTree::loadRTree(IStorageManager& sm,
 }
 
 SpatialIndex::RTree::RTree::RTree(IStorageManager& sm, Tools::PropertySet& ps) :
-	m_pStorageManager(&sm),
-	m_rootID(StorageManager::NewPage),
-	m_headerID(StorageManager::NewPage),
-	m_treeVariant(RV_RSTAR),
-	m_fillFactor(0.7),
-	m_indexCapacity(100),
-	m_leafCapacity(100),
-	m_nearMinimumOverlapFactor(32),
-	m_splitDistributionFactor(0.4),
-	m_reinsertFactor(0.3),
-	m_dimension(2),
-	m_bTightMBRs(true),
-	m_pointPool(500),
-	m_regionPool(1000),
-	m_indexPool(100),
-	m_leafPool(100),
-	m_pointCount(0)
+			m_pStorageManager(&sm),
+			m_rootID(StorageManager::NewPage),
+			m_headerID(StorageManager::NewPage),
+			m_treeVariant(RV_RSTAR),
+			m_fillFactor(0.7),
+			m_indexCapacity(100),
+			m_leafCapacity(100),
+			m_nearMinimumOverlapFactor(32),
+			m_splitDistributionFactor(0.4),
+			m_reinsertFactor(0.3),
+			m_dimension(2),
+			m_bTightMBRs(true),
+			m_pointPool(500),
+			m_regionPool(1000),
+			m_indexPool(100),
+			m_leafPool(100),
+			m_pointCount(0)
 {
 #ifdef HAVE_PTHREAD_H
 	pthread_rwlock_init(&m_rwLock, NULL);
@@ -373,7 +373,7 @@ SpatialIndex::RTree::RTree::RTree(IStorageManager& sm, Tools::PropertySet& ps) :
 	{
 		if (var.m_varType == Tools::VT_LONGLONG) m_headerID = var.m_val.llVal;
 		else if (var.m_varType == Tools::VT_LONG) m_headerID = var.m_val.lVal;
-			// for backward compatibility only.
+		// for backward compatibility only.
 		else throw Tools::IllegalArgumentException("RTree: Property IndexIdentifier must be Tools::VT_LONGLONG");
 
 		initOld(ps);
@@ -431,7 +431,7 @@ void SpatialIndex::RTree::RTree::insertData(uint32_t len, const byte* pData, con
 		}
 
 		insertData_impl(len, buffer, *mbr, id);
-			// the buffer is stored in the tree. Do not delete here.
+		// the buffer is stored in the tree. Do not delete here.
 
 #ifndef HAVE_PTHREAD_H
 		m_rwLock = false;
@@ -517,7 +517,7 @@ void SpatialIndex::RTree::RTree::nearestNeighborQuery(uint32_t k, const IShape& 
 		uint32_t count = 0;
 		double knearest = 0.0;
 
-    int counter = 0;
+		int counter = 0;
 		while (! queue.empty())
 		{
 			NNEntry* pFirst = queue.top();
@@ -533,7 +533,7 @@ void SpatialIndex::RTree::RTree::nearestNeighborQuery(uint32_t k, const IShape& 
 				// n is a leaf or an index.
 				NodePtr n = readNode(pFirst->m_id);
 
-        v.setDistance(3.0);
+				v.setDistance(3.0);
 				v.visitNode(*n);
 
 				for (uint32_t cChild = 0; cChild < n->m_children; ++cChild)
@@ -643,39 +643,39 @@ double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, uint64_t& id1
 	else throw Tools::ResourceLockedException("nearestNeighborQuery: cannot acquire a shared lock");
 #endif
 
-  try {
-    // COMPUTE HAUSDORFF HERE
-    std::queue<id_type> node_queue;
+	try {
+		// COMPUTE HAUSDORFF HERE
+		std::queue<id_type> node_queue;
 
-    float hausdorff = 0.0;
-    node_queue.push(m_rootID);
-    while (! node_queue.empty())
-    {
-      id_type top = node_queue.front();
-      node_queue.pop();
-      NodePtr n = readNode(top);
-      for (uint32_t cChild = 0; cChild < n->m_children; ++cChild)
-      {
-        if (n->m_level == 0)
-        {
-          Point p = Point(n->m_ptrMBR[cChild]->m_pLow,2);
+		float hausdorff = 0.0;
+		node_queue.push(m_rootID);
+		while (! node_queue.empty())
+		{
+			id_type top = node_queue.front();
+			node_queue.pop();
+			NodePtr n = readNode(top);
+			for (uint32_t cChild = 0; cChild < n->m_children; ++cChild)
+			{
+				if (n->m_level == 0)
+				{
+					Point p = Point(n->m_ptrMBR[cChild]->m_pLow,2);
 
-          query.nearestNeighborQuery(1, p, v);
-          if (v.getDistance() > hausdorff) {
-            hausdorff = v.getDistance();
-            id1 = n->m_pIdentifier[cChild];
-            id2 = query.m_point_id;
-          }
-        }
-        else {
-          node_queue.push(n->m_pIdentifier[cChild]);
-        }
-      }
-    }
-    return hausdorff;
+					query.nearestNeighborQuery(1, p, v);
+					if (v.getDistance() > hausdorff) {
+						hausdorff = v.getDistance();
+						id1 = n->m_pIdentifier[cChild];
+						id2 = query.m_point_id;
+					}
+				}
+				else {
+					node_queue.push(n->m_pIdentifier[cChild]);
+				}
+			}
+		}
+		return hausdorff;
 
 #ifndef HAVE_PTHREAD_H
-		m_rwLock = false;
+m_rwLock = false;
 #endif
 	}
 	catch (...)
@@ -704,19 +704,21 @@ double SpatialIndex::RTree::RTree::mhausdorff(ISpatialIndex& query, uint64_t& id
 		double max = std::numeric_limits<double>::min();
 
 		Region r = Region(2);
-    float weighted_dist = 0.0;
-    int total_pointCount = 0;
+		float weighted_dist = 0.0;
+		int total_pointCount = 0;
 		for (int i=this->m_vec_pMBR.size()-1; i>=0; i--) {
 			this->m_vec_pMBR[i]->getMBR(r);
-      weighted_dist += r.getMHausDistLB(queryRTreePtr->m_vec_pMBR,max) * this->m_vec_pointCount[i];
-      total_pointCount += this->m_vec_pointCount[i];
+			weighted_dist += r.getMHausDistLB(queryRTreePtr->m_vec_pMBR,max) * this->m_vec_pointCount[i];
+			total_pointCount += this->m_vec_pointCount[i];
 		}
 
-    if (this->m_pointCount != total_pointCount) {
-      std::cout << "Point counts don't match!!" << std::endl;
-    }
+		if (this->m_pointCount != total_pointCount) {
+			std::cout << "Point counts don't match!!" << std::endl;
+		}
 
-    retDist = weighted_dist / this->m_pointCount;
+
+		//std::cout << this->m_pointCount << std::endl;
+		retDist = weighted_dist / this->m_pointCount;
 
 	} else if (mode==3) {
 		NodePtr root1 = readNode(this->m_rootID);
@@ -742,39 +744,39 @@ double SpatialIndex::RTree::RTree::mhausdorff(ISpatialIndex& query, uint64_t& id
 	else throw Tools::ResourceLockedException("nearestNeighborQuery: cannot acquire a shared lock");
 #endif
 
-  try {
-    // COMPUTE HAUSDORFF HERE
-    std::queue<id_type> node_queue;
+	try {
+		// COMPUTE HAUSDORFF HERE
+		std::queue<id_type> node_queue;
 
-    float hausdorff = 0.0;
-    float total_dist = 0.0;
-    int point_count = 0;
-    node_queue.push(m_rootID);
-    while (! node_queue.empty())
-    {
-      id_type top = node_queue.front();
-      node_queue.pop();
-      NodePtr n = readNode(top);
-      for (uint32_t cChild = 0; cChild < n->m_children; ++cChild)
-      {
-        if (n->m_level == 0)
-        {
-          Point p = Point(n->m_ptrMBR[cChild]->m_pLow,2);
-          query.nearestNeighborQuery(1, p, v);
+		float hausdorff = 0.0;
+		float total_dist = 0.0;
+		int point_count = 0;
+		node_queue.push(m_rootID);
+		while (! node_queue.empty())
+		{
+			id_type top = node_queue.front();
+			node_queue.pop();
+			NodePtr n = readNode(top);
+			for (uint32_t cChild = 0; cChild < n->m_children; ++cChild)
+			{
+				if (n->m_level == 0)
+				{
+					Point p = Point(n->m_ptrMBR[cChild]->m_pLow,2);
+					query.nearestNeighborQuery(1, p, v);
 
-          total_dist += v.getDistance();
-          point_count++;
-        }
-        else {
-          node_queue.push(n->m_pIdentifier[cChild]);
-        }
-      }
-    }
-    hausdorff = total_dist / point_count;
-    return hausdorff;
+					total_dist += v.getDistance();
+					point_count++;
+				}
+				else {
+					node_queue.push(n->m_pIdentifier[cChild]);
+				}
+			}
+		}
+		hausdorff = total_dist / point_count;
+		return hausdorff;
 
 #ifndef HAVE_PTHREAD_H
-		m_rwLock = false;
+m_rwLock = false;
 #endif
 	}
 	catch (...)
@@ -809,7 +811,11 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 	m_vec_pointCount.clear();
 
 
+
 	NodePtr root = readNode(this->m_rootID);
+
+	this->m_pointCount = root->updatePointCount();
+
 
 	if (root->m_level == 0) {
 		IShape *pShape;
@@ -890,7 +896,7 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 			Region *pMBR = new Region(2);
 			pShape->getMBR(*pMBR);
 			m_vec_pMBR.push_back(pMBR);
-			m_vec_pointCount.push_back(n->m_pointCount);
+			m_vec_pointCount.push_back(n->updatePointCount());
 			delete pShape;
 			delete e->m_pEntry;
 		}
@@ -1046,15 +1052,15 @@ void SpatialIndex::RTree::RTree::addCommand(ICommand* pCommand, CommandType ct)
 {
 	switch (ct)
 	{
-		case CT_NODEREAD:
-			m_readNodeCommands.push_back(Tools::SmartPointer<ICommand>(pCommand));
-			break;
-		case CT_NODEWRITE:
-			m_writeNodeCommands.push_back(Tools::SmartPointer<ICommand>(pCommand));
-			break;
-		case CT_NODEDELETE:
-			m_deleteNodeCommands.push_back(Tools::SmartPointer<ICommand>(pCommand));
-			break;
+	case CT_NODEREAD:
+		m_readNodeCommands.push_back(Tools::SmartPointer<ICommand>(pCommand));
+		break;
+	case CT_NODEWRITE:
+		m_writeNodeCommands.push_back(Tools::SmartPointer<ICommand>(pCommand));
+		break;
+	case CT_NODEDELETE:
+		m_deleteNodeCommands.push_back(Tools::SmartPointer<ICommand>(pCommand));
+		break;
 	}
 }
 
@@ -1164,10 +1170,10 @@ void SpatialIndex::RTree::RTree::initNew(Tools::PropertySet& ps)
 	if (var.m_varType != Tools::VT_EMPTY)
 	{
 		if (
-			var.m_varType != Tools::VT_LONG ||
-			(var.m_val.lVal != RV_LINEAR &&
-			var.m_val.lVal != RV_QUADRATIC &&
-			var.m_val.lVal != RV_RSTAR))
+				var.m_varType != Tools::VT_LONG ||
+				(var.m_val.lVal != RV_LINEAR &&
+						var.m_val.lVal != RV_QUADRATIC &&
+						var.m_val.lVal != RV_RSTAR))
 			throw Tools::IllegalArgumentException("initNew: Property TreeVariant must be Tools::VT_LONG and of RTreeVariant type");
 
 		m_treeVariant = static_cast<RTreeVariant>(var.m_val.lVal);
@@ -1179,18 +1185,18 @@ void SpatialIndex::RTree::RTree::initNew(Tools::PropertySet& ps)
 	var = ps.getProperty("FillFactor");
 	if (var.m_varType != Tools::VT_EMPTY)
 	{
-	    if (var.m_varType != Tools::VT_DOUBLE)
-            throw Tools::IllegalArgumentException("initNew: Property FillFactor was not of type Tools::VT_DOUBLE");
-        
-        if (var.m_val.dblVal <= 0.0)
-            throw Tools::IllegalArgumentException("initNew: Property FillFactor was less than 0.0");
-        
-        if (((m_treeVariant == RV_LINEAR || m_treeVariant == RV_QUADRATIC) && var.m_val.dblVal > 0.5))
-            throw Tools::IllegalArgumentException(  "initNew: Property FillFactor must be in range "
-                                                    "(0.0, 0.5) for LINEAR or QUADRATIC index types");
-        if ( var.m_val.dblVal >= 1.0)
-            throw Tools::IllegalArgumentException(  "initNew: Property FillFactor must be in range "
-                                                    "(0.0, 1.0) for RSTAR index type");
+		if (var.m_varType != Tools::VT_DOUBLE)
+			throw Tools::IllegalArgumentException("initNew: Property FillFactor was not of type Tools::VT_DOUBLE");
+
+		if (var.m_val.dblVal <= 0.0)
+			throw Tools::IllegalArgumentException("initNew: Property FillFactor was less than 0.0");
+
+		if (((m_treeVariant == RV_LINEAR || m_treeVariant == RV_QUADRATIC) && var.m_val.dblVal > 0.5))
+			throw Tools::IllegalArgumentException(  "initNew: Property FillFactor must be in range "
+					"(0.0, 0.5) for LINEAR or QUADRATIC index types");
+		if ( var.m_val.dblVal >= 1.0)
+			throw Tools::IllegalArgumentException(  "initNew: Property FillFactor must be in range "
+					"(0.0, 1.0) for RSTAR index type");
 		m_fillFactor = var.m_val.dblVal;
 	}
 
@@ -1219,10 +1225,10 @@ void SpatialIndex::RTree::RTree::initNew(Tools::PropertySet& ps)
 	if (var.m_varType != Tools::VT_EMPTY)
 	{
 		if (
-			var.m_varType != Tools::VT_ULONG ||
-			var.m_val.ulVal < 1 ||
-			var.m_val.ulVal > m_indexCapacity ||
-			var.m_val.ulVal > m_leafCapacity)
+				var.m_varType != Tools::VT_ULONG ||
+				var.m_val.ulVal < 1 ||
+				var.m_val.ulVal > m_indexCapacity ||
+				var.m_val.ulVal > m_leafCapacity)
 			throw Tools::IllegalArgumentException("initNew: Property NearMinimumOverlapFactor must be Tools::VT_ULONG and less than both index and leaf capacities");
 
 		m_nearMinimumOverlapFactor = var.m_val.ulVal;
@@ -1233,9 +1239,9 @@ void SpatialIndex::RTree::RTree::initNew(Tools::PropertySet& ps)
 	if (var.m_varType != Tools::VT_EMPTY)
 	{
 		if (
-			var.m_varType != Tools::VT_DOUBLE ||
-			var.m_val.dblVal <= 0.0 ||
-			var.m_val.dblVal >= 1.0)
+				var.m_varType != Tools::VT_DOUBLE ||
+				var.m_val.dblVal <= 0.0 ||
+				var.m_val.dblVal >= 1.0)
 			throw Tools::IllegalArgumentException("initNew: Property SplitDistributionFactor must be Tools::VT_DOUBLE and in (0.0, 1.0)");
 
 		m_splitDistributionFactor = var.m_val.dblVal;
@@ -1246,9 +1252,9 @@ void SpatialIndex::RTree::RTree::initNew(Tools::PropertySet& ps)
 	if (var.m_varType != Tools::VT_EMPTY)
 	{
 		if (
-			var.m_varType != Tools::VT_DOUBLE ||
-			var.m_val.dblVal <= 0.0 ||
-			var.m_val.dblVal >= 1.0)
+				var.m_varType != Tools::VT_DOUBLE ||
+				var.m_val.dblVal <= 0.0 ||
+				var.m_val.dblVal >= 1.0)
 			throw Tools::IllegalArgumentException("initNew: Property ReinsertFactor must be Tools::VT_DOUBLE and in (0.0, 1.0)");
 
 		m_reinsertFactor = var.m_val.dblVal;
@@ -1341,10 +1347,10 @@ void SpatialIndex::RTree::RTree::initOld(Tools::PropertySet& ps)
 	if (var.m_varType != Tools::VT_EMPTY)
 	{
 		if (
-			var.m_varType != Tools::VT_LONG ||
-			(var.m_val.lVal != RV_LINEAR &&
-			 var.m_val.lVal != RV_QUADRATIC &&
-			 var.m_val.lVal != RV_RSTAR))
+				var.m_varType != Tools::VT_LONG ||
+				(var.m_val.lVal != RV_LINEAR &&
+						var.m_val.lVal != RV_QUADRATIC &&
+						var.m_val.lVal != RV_RSTAR))
 			throw Tools::IllegalArgumentException("initOld: Property TreeVariant must be Tools::VT_LONG and of RTreeVariant type");
 
 		m_treeVariant = static_cast<RTreeVariant>(var.m_val.lVal);
@@ -1355,10 +1361,10 @@ void SpatialIndex::RTree::RTree::initOld(Tools::PropertySet& ps)
 	if (var.m_varType != Tools::VT_EMPTY)
 	{
 		if (	
-			var.m_varType != Tools::VT_ULONG ||
-			var.m_val.ulVal < 1 ||
-			var.m_val.ulVal > m_indexCapacity ||
-			var.m_val.ulVal > m_leafCapacity)
+				var.m_varType != Tools::VT_ULONG ||
+				var.m_val.ulVal < 1 ||
+				var.m_val.ulVal > m_indexCapacity ||
+				var.m_val.ulVal > m_leafCapacity)
 			throw Tools::IllegalArgumentException("initOld: Property NearMinimumOverlapFactor must be Tools::VT_ULONG and less than both index and leaf capacities");
 
 		m_nearMinimumOverlapFactor = var.m_val.ulVal;
@@ -1435,20 +1441,20 @@ void SpatialIndex::RTree::RTree::initOld(Tools::PropertySet& ps)
 void SpatialIndex::RTree::RTree::storeHeader()
 {
 	const uint32_t headerSize =
-		sizeof(id_type) +						// m_rootID
-		sizeof(RTreeVariant) +					// m_treeVariant
-		sizeof(double) +						// m_fillFactor
-		sizeof(uint32_t) +						// m_indexCapacity
-		sizeof(uint32_t) +						// m_leafCapacity
-		sizeof(uint32_t) +						// m_nearMinimumOverlapFactor
-		sizeof(double) +						// m_splitDistributionFactor
-		sizeof(double) +						// m_reinsertFactor
-		sizeof(uint32_t) +						// m_dimension
-		sizeof(char) +							// m_bTightMBRs
-		sizeof(uint32_t) +						// m_stats.m_nodes
-		sizeof(uint64_t) +						// m_stats.m_data
-		sizeof(uint32_t) +						// m_stats.m_treeHeight
-		m_stats.m_u32TreeHeight * sizeof(uint32_t);	// m_stats.m_nodesInLevel
+			sizeof(id_type) +						// m_rootID
+			sizeof(RTreeVariant) +					// m_treeVariant
+			sizeof(double) +						// m_fillFactor
+			sizeof(uint32_t) +						// m_indexCapacity
+			sizeof(uint32_t) +						// m_leafCapacity
+			sizeof(uint32_t) +						// m_nearMinimumOverlapFactor
+			sizeof(double) +						// m_splitDistributionFactor
+			sizeof(double) +						// m_reinsertFactor
+			sizeof(uint32_t) +						// m_dimension
+			sizeof(char) +							// m_bTightMBRs
+			sizeof(uint32_t) +						// m_stats.m_nodes
+			sizeof(uint64_t) +						// m_stats.m_data
+			sizeof(uint32_t) +						// m_stats.m_treeHeight
+			m_stats.m_u32TreeHeight * sizeof(uint32_t);	// m_stats.m_nodesInLevel
 
 	byte* header = new byte[headerSize];
 	byte* ptr = header;
@@ -1815,8 +1821,8 @@ void SpatialIndex::RTree::RTree::selfJoinQuery(id_type id1, id_type id2, const R
 			for (uint32_t cChild2 = 0; cChild2 < n2->m_children; ++cChild2)
 			{
 				if (
-					r.intersectsRegion(*(n2->m_ptrMBR[cChild2])) &&
-					n1->m_ptrMBR[cChild1]->intersectsRegion(*(n2->m_ptrMBR[cChild2])))
+						r.intersectsRegion(*(n2->m_ptrMBR[cChild2])) &&
+						n1->m_ptrMBR[cChild1]->intersectsRegion(*(n2->m_ptrMBR[cChild2])))
 				{
 					if (n1->m_level == 0)
 					{
@@ -1846,32 +1852,32 @@ void SpatialIndex::RTree::RTree::selfJoinQuery(id_type id1, id_type id2, const R
 std::ostream& SpatialIndex::RTree::operator<<(std::ostream& os, const RTree& t)
 {
 	os	<< "Dimension: " << t.m_dimension << std::endl
-		<< "Fill factor: " << t.m_fillFactor << std::endl
-		<< "Index capacity: " << t.m_indexCapacity << std::endl
-		<< "Leaf capacity: " << t.m_leafCapacity << std::endl
-		<< "Tight MBRs: " << ((t.m_bTightMBRs) ? "enabled" : "disabled") << std::endl;
+			<< "Fill factor: " << t.m_fillFactor << std::endl
+			<< "Index capacity: " << t.m_indexCapacity << std::endl
+			<< "Leaf capacity: " << t.m_leafCapacity << std::endl
+			<< "Tight MBRs: " << ((t.m_bTightMBRs) ? "enabled" : "disabled") << std::endl;
 
 	if (t.m_treeVariant == RV_RSTAR)
 	{
 		os	<< "Near minimum overlap factor: " << t.m_nearMinimumOverlapFactor << std::endl
-			<< "Reinsert factor: " << t.m_reinsertFactor << std::endl
-			<< "Split distribution factor: " << t.m_splitDistributionFactor << std::endl;
+				<< "Reinsert factor: " << t.m_reinsertFactor << std::endl
+				<< "Split distribution factor: " << t.m_splitDistributionFactor << std::endl;
 	}
 
 	if (t.m_stats.getNumberOfNodesInLevel(0) > 0)
 		os	<< "Utilization: " << 100 * t.m_stats.getNumberOfData() / (t.m_stats.getNumberOfNodesInLevel(0) * t.m_leafCapacity) << "%" << std::endl
-			<< t.m_stats;
+		<< t.m_stats;
 
-	#ifndef NDEBUG
+#ifndef NDEBUG
 	os	<< "Leaf pool hits: " << t.m_leafPool.m_hits << std::endl
-		<< "Leaf pool misses: " << t.m_leafPool.m_misses << std::endl
-		<< "Index pool hits: " << t.m_indexPool.m_hits << std::endl
-		<< "Index pool misses: " << t.m_indexPool.m_misses << std::endl
-		<< "Region pool hits: " << t.m_regionPool.m_hits << std::endl
-		<< "Region pool misses: " << t.m_regionPool.m_misses << std::endl
-		<< "Point pool hits: " << t.m_pointPool.m_hits << std::endl
-		<< "Point pool misses: " << t.m_pointPool.m_misses << std::endl;
-	#endif
+			<< "Leaf pool misses: " << t.m_leafPool.m_misses << std::endl
+			<< "Index pool hits: " << t.m_indexPool.m_hits << std::endl
+			<< "Index pool misses: " << t.m_indexPool.m_misses << std::endl
+			<< "Region pool hits: " << t.m_regionPool.m_hits << std::endl
+			<< "Region pool misses: " << t.m_regionPool.m_misses << std::endl
+			<< "Point pool hits: " << t.m_pointPool.m_hits << std::endl
+			<< "Point pool misses: " << t.m_pointPool.m_misses << std::endl;
+#endif
 
 	return os;
 }

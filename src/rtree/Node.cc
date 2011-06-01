@@ -56,6 +56,7 @@ int Node::updatePointCount() {
 
 	if (this->isLeaf()) {
 		this->m_pointCount = this->getChildrenCount();
+		std::cout << this->m_level << " " << this->m_children << std::endl;
 
 	} else {
 		this->m_pointCount = 0;
@@ -65,6 +66,7 @@ int Node::updatePointCount() {
 			this->m_pointCount += cPtr->updatePointCount();
 		}
 	}
+
 
 	return this->m_pointCount;
 }
@@ -82,8 +84,8 @@ void Node::loadFromByteArray(const byte* ptr)
 	memcpy(&m_children, ptr, sizeof(uint32_t));
 	ptr += sizeof(uint32_t);
 
-	memcpy(&m_pointCount, ptr, sizeof(int));
-	ptr += sizeof(int);
+	//memcpy(&m_pointCount, ptr, sizeof(uint32_t));
+	//ptr += sizeof(uint32_t);
 
 	for (uint32_t u32Child = 0; u32Child < m_children; ++u32Child)
 	{
@@ -142,8 +144,8 @@ void Node::storeToByteArray(byte** data, uint32_t& len)
 	memcpy(ptr, &m_children, sizeof(uint32_t));
 	ptr += sizeof(uint32_t);
 
-	memcpy(ptr, &m_pointCount, sizeof(int));
-	ptr += sizeof(int);
+	//memcpy(ptr, &m_pointCount, sizeof(uint32_t));
+	//ptr += sizeof(uint32_t);
 
 	for (uint32_t u32Child = 0; u32Child < m_children; ++u32Child)
 	{
