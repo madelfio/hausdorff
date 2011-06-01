@@ -70,6 +70,7 @@ namespace SpatialIndex
 			virtual void nearestNeighborQuery(uint32_t k, const IShape& query, IVisitor& v);
 
 			virtual double hausdorff(ISpatialIndex& query, uint64_t& id1, uint64_t& id2, int mode, IVisitor& v);
+			virtual double mhausdorff(ISpatialIndex& query, uint64_t& id1, uint64_t& id2, int mode, IVisitor& v);
 
 			virtual void selfJoinQuery(const IShape& s, IVisitor& v);
 			virtual void queryStrategy(IQueryStrategy& qs);
@@ -79,8 +80,10 @@ namespace SpatialIndex
 			virtual void getStatistics(IStatistics** out) const;
 
 			double hausdorff(ISpatialIndex& query, uint64_t& id1, uint64_t& id2, IVisitor& v);
+			double mhausdorff(ISpatialIndex& query, uint64_t& id1, uint64_t& id2, IVisitor& v);
 			virtual void selectMBRs(const int numMBRs);
 			virtual void clearMBRs();
+
 
 			virtual void updatePointCount();
 

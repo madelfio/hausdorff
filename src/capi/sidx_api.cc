@@ -602,6 +602,67 @@ SIDX_C_DLL double Index_Hausdorff(IndexH index,
 	return 0;
 }
 
+SIDX_C_DLL double Index_MHausdorff(IndexH index, 
+		IndexH index2,
+		uint64_t* id1,
+		uint64_t* id2,
+		int* traversal_cost,
+		int mode)
+{
+	VALIDATE_POINTER1(index, "Index_MHausdorff", RT_Failure);
+	VALIDATE_POINTER1(index2, "Index_MHausdorff", RT_Failure);
+	Index* idx = static_cast<Index*>(index);
+	Index* idx2 = static_cast<Index*>(index2);
+
+	IdVisitor* visitor = 0;
+	if (mode == 0) {
+		visitor = new IdVisitor;
+	}
+
+	try {	 
+
+		double h = idx->index().mhausdorff(idx2->index(),
+				*id1,
+				*id2,
+				mode,
+				*visitor);
+
+		if (mode == 0) {
+			*traversal_cost = visitor->getTraversalCost();
+			delete visitor;
+		}
+		return h;
+
+	} catch (Tools::Exception& e)
+	{
+		Error_PushError(RT_Failure, 
+				e.what().c_str(),
+				"Index_MHausdorff");
+		if (mode == 0) {
+			delete visitor;
+		}
+		return 0;
+	} catch (std::exception const& e)
+	{
+		Error_PushError(RT_Failure, 
+				e.what(),
+				"Index_MHausdorff");
+		if (mode == 0) {
+			delete visitor;
+		}
+		return 0;
+	} catch (...) {
+		Error_PushError(RT_Failure, 
+				"Unknown Error",
+				"Index_MHausdorff");
+		if (mode == 0) {
+			delete visitor;
+		}
+		return 0;		  
+	}
+	return 0;
+}
+
 SIDX_DLL void Index_SelectMBRs(IndexH index,
 		int numMBRs)
 {
@@ -629,6 +690,20 @@ SIDX_DLL void Index_ClearMBRs(IndexH index)
 				"Unknown Error",
 				"Index_ClearMBRs");
 	}
+}
+
+SIDX_DLL void Index_UpdatePointCount(IndexH index)
+{
+  VALIDATE_POINTER0(index, "Index_UpdatePointCounts");
+  Index* idx = static_cast<Index*>(index);
+
+  try {
+    idx->index().updatePointCount();
+  } catch (...) {
+    Error_PushError(RT_Failure,
+        "Unknown Error",
+        "Index_UpdatePointCounts");
+  }
 }
 
 SIDX_C_DLL RTError Index_GetBounds(	  IndexH index, 

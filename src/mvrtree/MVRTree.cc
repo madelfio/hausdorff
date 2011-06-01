@@ -382,6 +382,11 @@ double SpatialIndex::MVRTree::MVRTree::hausdorff(ISpatialIndex& query, uint64_t&
 {
 }
 
+double SpatialIndex::MVRTree::MVRTree::mhausdorff(ISpatialIndex& query, uint64_t& id1, uint64_t& id2, int mode, IVisitor& v) {
+
+}
+
+
 void SpatialIndex::MVRTree::MVRTree::clearMBRs()
 {
 
