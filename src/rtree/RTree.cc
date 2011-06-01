@@ -699,27 +699,30 @@ double SpatialIndex::RTree::RTree::mhausdorff(ISpatialIndex& query, uint64_t& id
 	} else if (mode==1) {
 		NodePtr root1 = readNode(this->m_rootID);
 		NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
-    // UPDATE WITH NEW FUNCTION NAME
-		retDist = root1->m_nodeMBR.getHausDistLB(root2->m_nodeMBR);
+		retDist = root1->m_nodeMBR.getMHausDistLB(root2->m_nodeMBR);
 	} else if (mode==2) {
 		double max = std::numeric_limits<double>::min();
 
 		Region r = Region(2);
+    float weighted_dist = 0.0;
+    int total_pointCount = 0;
 		for (int i=this->m_vec_pMBR.size()-1; i>=0; i--) {
 			this->m_vec_pMBR[i]->getMBR(r);
-      // UPDATE TO DO WEIGHTED AVERAGING
-			max = std::max(max, r.getHausDistLB(queryRTreePtr->m_vec_pMBR,max));
+      weighted_dist += r.getMHausDistLB(queryRTreePtr->m_vec_pMBR,max) * this->m_vec_pointCount[i];
+      total_pointCount += this->m_vec_pointCount[i];
 		}
 
-		retDist = max;
+    if (this->m_pointCount != total_pointCount) {
+      std::cout << "Point counts don't match!!" << std::endl;
+    }
+
+    retDist = weighted_dist / this->m_pointCount;
+
 	} else if (mode==3) {
 		NodePtr root1 = readNode(this->m_rootID);
 		NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
-    // UPDATE WITH NEW FUNCTION NAME
 		retDist = root1->m_nodeMBR.getMinimumDistance(root2->m_nodeMBR);
 	}
-
-
 
 	return retDist;
 }

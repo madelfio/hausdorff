@@ -635,6 +635,39 @@ double Region::getHausDistLB(const std::vector<const Region*> vec_pMBR, double m
 }
 
 
+/*
+ *  Added by Marco 6/1/11
+ * 	Computing MHausDistLB from an MBR to another MBR or a point.
+ */
+
+double Region::getMHausDistLB(const IShape& s) const
+{
+	if (this->m_dimension != 2) {
+		throw Tools::NotSupportedException(
+			"Region::getHausDistUB: #dimensions not supported"
+		);
+	}
+
+  return std::sqrt(this->getMinimumDistanceSq(s));
+}
+
+double Region::getMHausDistLB(const std::vector<const Region*> vec_pMBR, double max) const
+{
+
+	if (this->m_dimension != 2) {
+		throw Tools::NotSupportedException(
+			"Region::getHausDistUB: #dimensions not supported"
+		);
+	}
+
+  double min = std::numeric_limits<double>::max();
+
+  for (int j=0; j<  vec_pMBR.size(); j++) {
+    min = std::min(min,this->getMinimumDistanceSq(*(vec_pMBR[j])));
+  }
+
+	return std::sqrt(min);
+}
 
 
 /*
