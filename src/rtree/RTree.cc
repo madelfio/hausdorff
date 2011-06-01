@@ -757,12 +757,33 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 				queue.push(pEntry);
 			}
 		} else {
-			IShape *pShape;
-			n->getShape(&pShape);
-			Region *pMBR = new Region(2);
-			pShape->getMBR(*pMBR);
-			m_vec_pMBR.push_back(pMBR);
-			delete pShape;
+			for (uint32_t cChild = 0; cChild < n->m_children; ++cChild)
+			{
+				//double area = n->m_ptrMBR[cChild]->getArea();
+				//Data* e = new Data(n->m_pDataLength[cChild],
+						//n->m_pData[cChild],
+						//*(n->m_ptrMBR[cChild]),
+						//n->m_pIdentifier[cChild]);
+
+				Region *pMBR = new Region(*(n->m_ptrMBR[cChild]));
+				m_vec_pMBR.push_back(pMBR);
+
+				//std::cout << "Adding Point ";
+				//std::cout << pMBR->m_pLow[0] << " " << pMBR->m_pLow[1] << " ";
+				//std::cout << pMBR->m_pHigh[0] << " " << pMBR->m_pHigh[1] << std::endl;
+
+				//NNEntry *pEntry = new NNEntry(n->m_pIdentifier[cChild], e, -area);
+				//queue.push(pEntry);
+			}
+
+
+
+			//IShape *pShape;
+			//n->getShape(&pShape);
+			//Region *pMBR = new Region(2);
+			//pShape->getMBR(*pMBR);
+			//m_vec_pMBR.push_back(pMBR);
+			//delete pShape;
 		}
 
 		if (pFirst->m_pEntry != NULL) delete pFirst->m_pEntry;
