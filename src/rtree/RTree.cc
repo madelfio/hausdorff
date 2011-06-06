@@ -606,7 +606,7 @@ double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, uint64_t& id1
 {
 	double retDist;
 	RTree *queryRTreePtr = dynamic_cast<RTree*>(&query);
-
+	//std::cout << "============" << std::endl;
 	//std::cout << *queryRTreePtr << std::endl;
 	if (mode==0) {
 		retDist = this->hausdorff2(query, id1, id2, v);
@@ -619,11 +619,14 @@ double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, uint64_t& id1
 	} else if (mode==2) {
 		double max = std::numeric_limits<double>::min();
 
-		//Region r = Region(2);
+		Region r = Region(2);
+
 		int counter = 0;
 		for (int i=this->m_vec_pMBR.size()-1; i>=0; i--) {
-			//this->m_vec_pMBR[i]->getMBR(r);
-			max = this->m_vec_pMBR[i]->getHausDistLB(queryRTreePtr->m_vec_pMBR,max,counter);
+			this->m_vec_pMBR[i]->getMBR(r);
+			//max = this->m_vec_pMBR[i]->getHausDistLB(queryRTreePtr->m_vec_pMBR,max,counter);
+			max = std::max(max,r.getHausDistLB(queryRTreePtr->m_vec_pMBR,max,counter));
+
 		}
 
 		v.incNumDistCals(counter);

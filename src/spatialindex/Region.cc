@@ -56,6 +56,11 @@ Region::Region(const Point& low, const Point& high)
 Region::Region(const Region& r)
 {
 	initialize(r.m_pLow, r.m_pHigh, r.m_dimension);
+	for (int i=0; i < 4; i++) {
+		Region *pR = new Region(2);
+		this->getEdge(i,*pR);
+		this->m_vec_pEdge.push_back(pR);
+	}
 }
 
 void Region::initialize(const double* pLow, const double* pHigh, uint32_t dimension)
@@ -93,11 +98,8 @@ void Region::initialize(const double* pLow, const double* pHigh, uint32_t dimens
 	memcpy(m_pLow, pLow, m_dimension * sizeof(double));
 	memcpy(m_pHigh, pHigh, m_dimension * sizeof(double));
 
-	for (int i=0; i < 4; i++) {
-		Region *pR = new Region(2);
-		this->getEdge(i,*pR);
-		this->m_vec_pEdge.push_back(pR);
-	}
+
+
 }
 
 void Region::initialize(uint32_t dimension)
@@ -260,6 +262,13 @@ uint32_t Region::getDimension() const
 void Region::getMBR(Region& out) const
 {
 	out = *this;
+
+	out.m_vec_pEdge.clear();
+	for (int i=0; i < 4; i++) {
+		Region *pR = new Region(2);
+		out.getEdge(i,*pR);
+		out.m_vec_pEdge.push_back(pR);
+	}
 }
 
 double Region::getArea() const
@@ -626,15 +635,17 @@ double Region::getHausDistLB(const std::vector<const Region*> vec_pMBR, double m
 		//);
 	//}
 
-	//Region edge1 = Region(2);
+	max = max*max;
+	Region edge1 = Region(2);
 
 
 	for (int i=0; i<4; i++) {
-		//this->getEdge(i,edge1);
+		this->getEdge(i,edge1);
 		double min = std::numeric_limits<double>::max();
 
 		for (int j=0; j<  vec_pMBR.size(); j++) {
 			min = std::min(min,this->m_vec_pEdge.at(i)->getMinimumDistanceSq(*(vec_pMBR[j])));
+			//min = std::min(min,edge1.getMinimumDistanceSq(*(vec_pMBR[j])));
 			counter++;
 			if (min < max) break;
 		}
