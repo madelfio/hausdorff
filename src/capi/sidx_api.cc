@@ -546,6 +546,7 @@ SIDX_C_DLL double Index_Hausdorff(IndexH index,
 		uint64_t* id1,
 		uint64_t* id2,
 		int* traversal_cost,
+    int* num_dist_cals,
 		int mode)
 {
 	VALIDATE_POINTER1(index, "Index_Hausdorff", RT_Failure);	 
@@ -554,9 +555,9 @@ SIDX_C_DLL double Index_Hausdorff(IndexH index,
 	Index* idx2 = static_cast<Index*>(index2);
 
 	IdVisitor* visitor = 0;
-	if (mode == 0) {
+	//if (mode == 0) {
 		visitor = new IdVisitor;
-	}
+	//}
 
 	try {	 
 
@@ -566,10 +567,12 @@ SIDX_C_DLL double Index_Hausdorff(IndexH index,
 				mode,
 				*visitor);
 
-		if (mode == 0) {
+    *num_dist_cals = visitor->getNumDistCals();
+
+		//if (mode == 0) {
 			*traversal_cost = visitor->getTraversalCost();
 			delete visitor;
-		}
+		//}
 		return h;
 
 	} catch (Tools::Exception& e)
@@ -607,6 +610,7 @@ SIDX_C_DLL double Index_MHausdorff(IndexH index,
 		uint64_t* id1,
 		uint64_t* id2,
 		int* traversal_cost,
+    int* num_dist_cals,
 		int mode)
 {
 	VALIDATE_POINTER1(index, "Index_MHausdorff", RT_Failure);
@@ -615,9 +619,9 @@ SIDX_C_DLL double Index_MHausdorff(IndexH index,
 	Index* idx2 = static_cast<Index*>(index2);
 
 	IdVisitor* visitor = 0;
-	if (mode == 0) {
+	//if (mode == 0) {
 		visitor = new IdVisitor;
-	}
+	//}
 
 	try {	 
 
@@ -627,10 +631,12 @@ SIDX_C_DLL double Index_MHausdorff(IndexH index,
 				mode,
 				*visitor);
 
-		if (mode == 0) {
+    *num_dist_cals = visitor->getNumDistCals();
+
+		//if (mode == 0) {
 			*traversal_cost = visitor->getTraversalCost();
 			delete visitor;
-		}
+		//}
 		return h;
 
 	} catch (Tools::Exception& e)
