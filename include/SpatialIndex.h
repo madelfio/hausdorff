@@ -163,6 +163,8 @@ namespace SpatialIndex
 		virtual void visitNode(const INode& in) = 0;
 		virtual void visitData(const IData& in) = 0;
 		virtual void visitData(std::vector<const IData*>& v) = 0;
+	    virtual void incNumDistCals(int inc) = 0;
+	    virtual int getNumDistCals() = 0;
 		virtual ~IVisitor() {}
 
     virtual double getDistance() = 0;

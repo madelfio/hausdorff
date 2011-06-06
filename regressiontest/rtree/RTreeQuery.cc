@@ -80,6 +80,9 @@ public:
 	}
   double getDistance() {return m_distance;}
   void setDistance(double d) {m_distance = d;}
+
+  void incNumDistCals(int inc){}
+  int getNumDistCals(){return 0;}
 };
 
 // example of a Strategy pattern.

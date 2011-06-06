@@ -69,3 +69,11 @@ void ObjVisitor::setDistance(double d)
 {
   m_distance = d;
 }
+
+
+void ObjVisitor::incNumDistCals(int inc) {
+}
+
+int ObjVisitor::getNumDistCals() {
+	return 0;
+}

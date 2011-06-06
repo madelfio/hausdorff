@@ -46,4 +46,7 @@ public:
 
    double getDistance();
    void setDistance(double d);
+
+   void incNumDistCals(int inc);
+   int getNumDistCals();
 };

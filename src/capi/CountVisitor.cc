@@ -60,3 +60,10 @@ void CountVisitor::setDistance(double d)
 {
   m_distance = d;
 }
+
+void CountVisitor::incNumDistCals(int inc) {
+}
+
+int CountVisitor::getNumDistCals() {
+	return 0;
+}

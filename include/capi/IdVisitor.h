@@ -34,6 +34,7 @@ private:
     uint64_t nResults;
     double m_distance;
     int m_traversalCost;
+    int m_numDistCals;
 
 public:
 
@@ -48,6 +49,9 @@ public:
     void visitData(std::vector<const SpatialIndex::IData*>& v);
     int getTraversalCost();
 
+    void incNumDistCals(int inc);
+
+    int getNumDistCals();
 
     double getDistance();
     void setDistance(double d);

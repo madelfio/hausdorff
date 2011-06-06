@@ -607,7 +607,7 @@ double Region::getHausDistLB(const IShape& s) const
 	return std::sqrt(max);
 }
 
-double Region::getHausDistLB(const std::vector<const Region*> vec_pMBR, double max) const
+double Region::getHausDistLB(const std::vector<const Region*> vec_pMBR, double max, int& counter) const
 {
 
 	if (this->m_dimension != 2) {
@@ -625,6 +625,7 @@ double Region::getHausDistLB(const std::vector<const Region*> vec_pMBR, double m
 
 		for (int j=0; j<  vec_pMBR.size(); j++) {
 			min = std::min(min,edge1.getMinimumDistanceSq(*(vec_pMBR[j])));
+			counter++;
 			if (min < max) break;
 		}
 

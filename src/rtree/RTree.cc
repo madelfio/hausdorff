@@ -550,6 +550,7 @@ void SpatialIndex::RTree::RTree::nearestNeighborQuery(uint32_t k, const IShape& 
 						queue.push(new NNEntry(n->m_pIdentifier[cChild], 0, nnc.getMinimumDistance(query, *(n->m_ptrMBR[cChild]))));
 					}
 				}
+				v.incNumDistCals(n->m_children);
 			}
 			else
 			{
@@ -613,14 +614,19 @@ double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, uint64_t& id1
 		NodePtr root1 = readNode(this->m_rootID);
 		NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
 		retDist = root1->m_nodeMBR.getHausDistLB(root2->m_nodeMBR);
+		v.incNumDistCals(4);
+
 	} else if (mode==2) {
 		double max = std::numeric_limits<double>::min();
 
 		Region r = Region(2);
+		int counter = 0;
 		for (int i=this->m_vec_pMBR.size()-1; i>=0; i--) {
 			this->m_vec_pMBR[i]->getMBR(r);
-			max = std::max(max, r.getHausDistLB(queryRTreePtr->m_vec_pMBR,max));
+			max = std::max(max, r.getHausDistLB(queryRTreePtr->m_vec_pMBR,max,counter));
 		}
+
+		v.incNumDistCals(counter);
 
 
 		retDist = max;
@@ -700,6 +706,7 @@ double SpatialIndex::RTree::RTree::mhausdorff(ISpatialIndex& query, uint64_t& id
 		NodePtr root1 = readNode(this->m_rootID);
 		NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
 		retDist = root1->m_nodeMBR.getMHausDistLB(root2->m_nodeMBR);
+		v.incNumDistCals(1);
 	} else if (mode==2) {
 		double max = std::numeric_limits<double>::min();
 
@@ -711,6 +718,7 @@ double SpatialIndex::RTree::RTree::mhausdorff(ISpatialIndex& query, uint64_t& id
 			weighted_dist += r.getMHausDistLB(queryRTreePtr->m_vec_pMBR,max) * this->m_vec_pointCount[i];
 			total_pointCount += this->m_vec_pointCount[i];
 		}
+		v.incNumDistCals(m_vec_pMBR.size()*queryRTreePtr->m_vec_pMBR.size());
 
 		if (this->m_pointCount != total_pointCount) {
 			std::cout << "Point counts don't match!!" << std::endl;

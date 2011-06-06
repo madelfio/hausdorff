@@ -76,6 +76,10 @@ public:
 	void visitData(std::vector<const IData*>& v) {}
   double getDistance() {return m_distance;}
   void setDistance(double d) {m_distance = d;}
+
+  void incNumDistCals(int inc){}
+
+  int getNumDistCals(){}
 };
 
 // example of a Strategy pattern.

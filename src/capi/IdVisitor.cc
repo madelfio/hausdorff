@@ -30,6 +30,7 @@
 IdVisitor::IdVisitor(): nResults(0)
 {
 	this->m_traversalCost = 0;
+	this->m_numDistCals = 0;
 }
 
 IdVisitor::~IdVisitor()
@@ -39,7 +40,7 @@ IdVisitor::~IdVisitor()
 
 int IdVisitor::getTraversalCost()
 {
-	return this->m_traversalCost++;
+	return this->m_traversalCost;
 }
 
 void IdVisitor::visitNode(const SpatialIndex::INode& n)
@@ -66,4 +67,12 @@ double IdVisitor::getDistance()
 void IdVisitor::setDistance(double d)
 {
   m_distance = d;
+}
+
+void IdVisitor::incNumDistCals(int inc) {
+ 	m_numDistCals += inc;
+}
+
+int IdVisitor::getNumDistCals() {
+	return m_numDistCals;
 }
