@@ -105,9 +105,10 @@ namespace SpatialIndex
 
 			void rangeQuery(RangeQueryType type, const IShape& query, IVisitor& v);
 			void selfJoinQuery(id_type id1, id_type id2, const Region& r, IVisitor& vis);
+			void listAllPoints();
 
-
-
+			double hausdorff2(ISpatialIndex& query, uint64_t& id1, uint64_t& id2, IVisitor& v);
+			double mhausdorff2(ISpatialIndex& query, uint64_t& id1, uint64_t& id2, IVisitor& v);
 
 			IStorageManager* m_pStorageManager;
 
@@ -155,6 +156,7 @@ namespace SpatialIndex
 
 			std::vector<const Region*> m_vec_pMBR;
 			std::vector<int> m_vec_pointCount;
+			std::vector<Point>  m_vec_point;
 
 #ifdef HAVE_PTHREAD_H
 			pthread_rwlock_t m_rwLock;

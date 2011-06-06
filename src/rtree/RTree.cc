@@ -609,7 +609,7 @@ double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, uint64_t& id1
 
 	//std::cout << *queryRTreePtr << std::endl;
 	if (mode==0) {
-		retDist = this->hausdorff(query, id1, id2, v);
+		retDist = this->hausdorff2(query, id1, id2, v);
 	} else if (mode==1) {
 		NodePtr root1 = readNode(this->m_rootID);
 		NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
@@ -701,7 +701,7 @@ double SpatialIndex::RTree::RTree::mhausdorff(ISpatialIndex& query, uint64_t& id
 
 	//std::cout << *queryRTreePtr << std::endl;
 	if (mode==0) {
-		retDist = this->mhausdorff(query, id1, id2, v);
+		retDist = this->mhausdorff2(query, id1, id2, v);
 	} else if (mode==1) {
 		NodePtr root1 = readNode(this->m_rootID);
 		NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
@@ -741,6 +741,9 @@ void SpatialIndex::RTree::RTree::updatePointCount() {
 	NodePtr root = readNode(this->m_rootID);
 	this->m_pointCount = root->updatePointCount();
 }
+
+
+
 
 double SpatialIndex::RTree::RTree::mhausdorff(ISpatialIndex& query, uint64_t& id1, uint64_t& id2, IVisitor& v)
 {
@@ -797,6 +800,98 @@ m_rwLock = false;
 }
 
 
+double SpatialIndex::RTree::RTree::hausdorff2(ISpatialIndex& query, uint64_t& id1, uint64_t& id2, IVisitor& v)
+{
+	RTree *queryRTreePtr = dynamic_cast<RTree*>(&query);
+
+	double max = 0;
+	for (int i=0; i< m_vec_point.size(); i++) {
+		Point p1 = m_vec_point.at(i);
+		double min = std::numeric_limits<double>::max();
+		for (int j=0; j< queryRTreePtr->m_vec_point.size(); j++) {
+			Point p2 = queryRTreePtr->m_vec_point.at(j);
+			double dist = p1.getMinimumDistance(p2);
+			v.incNumDistCals(1);
+			min = std::min(min,dist);
+			if (min < max) break;
+		}
+		max = std::max(max,min);
+	}
+	return max;
+}
+
+double SpatialIndex::RTree::RTree::mhausdorff2(ISpatialIndex& query, uint64_t& id1, uint64_t& id2, IVisitor& v)
+{
+	RTree *queryRTreePtr = dynamic_cast<RTree*>(&query);
+
+	double sum = 0;
+	for (int i=0; i< m_vec_point.size(); i++) {
+		Point p1 = m_vec_point.at(i);
+		double min = std::numeric_limits<double>::max();
+		for (int j=0; j< queryRTreePtr->m_vec_point.size(); j++) {
+			Point p2 = queryRTreePtr->m_vec_point.at(j);
+			double dist = p1.getMinimumDistance(p2);
+			v.incNumDistCals(1);
+			min = std::min(min,dist);
+		}
+		sum += min;
+	}
+
+	return sum/this->m_vec_point.size();
+}
+
+
+void SpatialIndex::RTree::RTree::listAllPoints()
+{
+
+#ifdef HAVE_PTHREAD_H
+	Tools::SharedLock lock(&m_rwLock);
+#else
+	if (m_rwLock == false) m_rwLock = true;
+	else throw Tools::ResourceLockedException("nearestNeighborQuery: cannot acquire a shared lock");
+#endif
+
+	try {
+		m_vec_point.clear();
+		// COMPUTE HAUSDORFF HERE
+		std::queue<id_type> node_queue;
+
+		float hausdorff = 0.0;
+		float total_dist = 0.0;
+		int point_count = 0;
+		node_queue.push(m_rootID);
+		while (! node_queue.empty())
+		{
+			id_type top = node_queue.front();
+			node_queue.pop();
+			NodePtr n = readNode(top);
+			for (uint32_t cChild = 0; cChild < n->m_children; ++cChild)
+			{
+				if (n->m_level == 0)
+				{
+					Point p = Point(n->m_ptrMBR[cChild]->m_pLow,2);
+					this->m_vec_point.push_back(p);
+				}
+				else {
+					node_queue.push(n->m_pIdentifier[cChild]);
+				}
+			}
+		}
+		return;
+
+#ifndef HAVE_PTHREAD_H
+m_rwLock = false;
+#endif
+	}
+	catch (...)
+	{
+#ifndef HAVE_PTHREAD_H
+		m_rwLock = false;
+#endif
+		throw;
+	}
+}
+
 
 
 /*
@@ -806,6 +901,7 @@ m_rwLock = false;
  */
 
 void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
+	this->listAllPoints();
 	std::priority_queue<NNEntry*, std::vector<NNEntry*>, NNEntry::ascending> queue;
 
 	if (num == m_vec_pMBR.size()) return;
