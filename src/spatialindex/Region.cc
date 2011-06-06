@@ -56,11 +56,11 @@ Region::Region(const Point& low, const Point& high)
 Region::Region(const Region& r)
 {
 	initialize(r.m_pLow, r.m_pHigh, r.m_dimension);
-	for (int i=0; i < 4; i++) {
-		Region *pR = new Region(2);
-		this->getEdge(i,*pR);
-		this->m_vec_pEdge.push_back(pR);
-	}
+	//for (int i=0; i < 4; i++) {
+		//Region *pR = new Region(2);
+		//this->getEdge(i,*pR);
+		//this->m_vec_pEdge.push_back(pR);
+	//}
 }
 
 void Region::initialize(const double* pLow, const double* pHigh, uint32_t dimension)
@@ -262,6 +262,7 @@ uint32_t Region::getDimension() const
 void Region::getMBR(Region& out) const
 {
 	out = *this;
+
 
 	out.m_vec_pEdge.clear();
 	for (int i=0; i < 4; i++) {
@@ -636,11 +637,11 @@ double Region::getHausDistLB(const std::vector<const Region*> vec_pMBR, double m
 	//}
 
 	max = max*max;
-	Region edge1 = Region(2);
+	//Region edge1 = Region(2);
 
 
 	for (int i=0; i<4; i++) {
-		this->getEdge(i,edge1);
+		//this->getEdge(i,edge1);
 		double min = std::numeric_limits<double>::max();
 
 		for (int j=0; j<  vec_pMBR.size(); j++) {

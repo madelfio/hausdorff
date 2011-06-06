@@ -619,13 +619,13 @@ double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, uint64_t& id1
 	} else if (mode==2) {
 		double max = std::numeric_limits<double>::min();
 
-		Region r = Region(2);
+		//Region r = Region(2);
 
 		int counter = 0;
 		for (int i=this->m_vec_pMBR.size()-1; i>=0; i--) {
-			this->m_vec_pMBR[i]->getMBR(r);
-			//max = this->m_vec_pMBR[i]->getHausDistLB(queryRTreePtr->m_vec_pMBR,max,counter);
-			max = std::max(max,r.getHausDistLB(queryRTreePtr->m_vec_pMBR,max,counter));
+			//this->m_vec_pMBR[i]->getMBR(r);
+			max = this->m_vec_pMBR[i]->getHausDistLB(queryRTreePtr->m_vec_pMBR,max,counter);
+			//max = std::max(max,r.getHausDistLB(queryRTreePtr->m_vec_pMBR,max,counter));
 
 		}
 
@@ -1001,6 +1001,7 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 			IShape *pShape;
 			e->m_pEntry->getShape(&pShape);
 			Region *pMBR = new Region(2);
+			pShape->getMBR(*pMBR);
 			m_vec_pMBR.push_back(pMBR);
 			m_vec_pointCount.push_back(n->updatePointCount());
 			delete pShape;
