@@ -92,6 +92,12 @@ void Region::initialize(const double* pLow, const double* pHigh, uint32_t dimens
 
 	memcpy(m_pLow, pLow, m_dimension * sizeof(double));
 	memcpy(m_pHigh, pHigh, m_dimension * sizeof(double));
+
+	for (int i=0; i < this->m_vec_pEdge.size(); i++) {
+		Region *pR = new Region(2);
+		this->getEdge(i,*pR);
+		this->m_vec_pEdge.push_back(pR);
+	}
 }
 
 void Region::initialize(uint32_t dimension)
@@ -115,6 +121,10 @@ Region::~Region()
 {
 	delete[] m_pLow;
 	delete[] m_pHigh;
+
+	for (int i=0; i < this->m_vec_pEdge.size(); i++) {
+		delete this->m_vec_pEdge.at(i);
+	}
 }
 
 Region& Region::operator=(const Region& r)
@@ -610,21 +620,21 @@ double Region::getHausDistLB(const IShape& s) const
 double Region::getHausDistLB(const std::vector<const Region*> vec_pMBR, double max, int& counter) const
 {
 
-	if (this->m_dimension != 2) {
-		throw Tools::NotSupportedException(
-			"Region::getHausDistUB: #dimensions not supported"
-		);
-	}
+	//if (this->m_dimension != 2) {
+		//throw Tools::NotSupportedException(
+			//"Region::getHausDistUB: #dimensions not supported"
+		//);
+	//}
 
-	Region edge1 = Region(2);
+	//Region edge1 = Region(2);
 
 
 	for (int i=0; i<4; i++) {
-		this->getEdge(i,edge1);
+		//this->getEdge(i,edge1);
 		double min = std::numeric_limits<double>::max();
 
 		for (int j=0; j<  vec_pMBR.size(); j++) {
-			min = std::min(min,edge1.getMinimumDistanceSq(*(vec_pMBR[j])));
+			min = std::min(min,this->m_vec_pEdge.at(i)->getMinimumDistanceSq(*(vec_pMBR[j])));
 			counter++;
 			if (min < max) break;
 		}

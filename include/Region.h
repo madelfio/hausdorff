@@ -111,6 +111,7 @@ namespace SpatialIndex
 		uint32_t m_dimension;
 		double* m_pLow;
 		double* m_pHigh;
+		std::vector<Region*> m_vec_pEdge;
 
 		friend SIDX_DLL std::ostream& operator<<(std::ostream& os, const Region& r);
 	}; // Region
