@@ -93,7 +93,7 @@ void Region::initialize(const double* pLow, const double* pHigh, uint32_t dimens
 	memcpy(m_pLow, pLow, m_dimension * sizeof(double));
 	memcpy(m_pHigh, pHigh, m_dimension * sizeof(double));
 
-	for (int i=0; i < this->m_vec_pEdge.size(); i++) {
+	for (int i=0; i < 4; i++) {
 		Region *pR = new Region(2);
 		this->getEdge(i,*pR);
 		this->m_vec_pEdge.push_back(pR);
