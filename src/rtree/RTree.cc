@@ -806,11 +806,11 @@ double SpatialIndex::RTree::RTree::hausdorff2(ISpatialIndex& query, uint64_t& id
 
 	double max = 0;
 	for (int i=0; i< m_vec_point.size(); i++) {
-		Point p1 = m_vec_point.at(i);
+		Point *p1 = &(m_vec_point.at(i));
 		double min = std::numeric_limits<double>::max();
 		for (int j=0; j< queryRTreePtr->m_vec_point.size(); j++) {
-			Point p2 = queryRTreePtr->m_vec_point.at(j);
-			double dist = p1.getMinimumDistance(p2);
+			Point *p2 = &(queryRTreePtr->m_vec_point.at(j));
+			double dist = p1->getMinimumDistance(*p2);
 			v.incNumDistCals(1);
 			min = std::min(min,dist);
 			if (min < max) break;
@@ -826,11 +826,11 @@ double SpatialIndex::RTree::RTree::mhausdorff2(ISpatialIndex& query, uint64_t& i
 
 	double sum = 0;
 	for (int i=0; i< m_vec_point.size(); i++) {
-		Point p1 = m_vec_point.at(i);
+		Point *p1 = &(m_vec_point.at(i));
 		double min = std::numeric_limits<double>::max();
 		for (int j=0; j< queryRTreePtr->m_vec_point.size(); j++) {
-			Point p2 = queryRTreePtr->m_vec_point.at(j);
-			double dist = p1.getMinimumDistance(p2);
+			Point *p2 = &(queryRTreePtr->m_vec_point.at(j));
+			double dist = p1->getMinimumDistance(*p2);
 			v.incNumDistCals(1);
 			min = std::min(min,dist);
 		}
