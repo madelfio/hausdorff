@@ -723,7 +723,7 @@ double SpatialIndex::RTree::RTree::mhausdorff(ISpatialIndex& query, uint64_t& id
 		}
 		v.incNumDistCals(m_vec_pMBR.size()*queryRTreePtr->m_vec_pMBR.size());
 
-		if (this->m_pointCount != total_pointCount) {
+		if (this->m_vec_point.size() != total_pointCount) {
 			std::cout << "Point counts don't match!!" << std::endl;
 		}
 
@@ -986,6 +986,8 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 			Region *pMBR = new Region(2);
 			pShape->getMBR(*pMBR);
 			m_vec_pMBR.push_back(pMBR);
+			m_vec_pointCount.push_back(n->updatePointCount());
+
 			delete pShape;
 		}
 
