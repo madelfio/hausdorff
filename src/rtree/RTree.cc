@@ -971,19 +971,19 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 				queue.push(pEntry);
 			}
 		} else {
-			for (uint32_t cChild = 0; cChild < n->m_children; ++cChild)
-			{
-				Region *pMBR = new Region(*(n->m_ptrMBR[cChild]));
-				m_vec_pMBR.push_back(pMBR);
-				m_vec_pointCount.push_back(1);
-			}
+			//for (uint32_t cChild = 0; cChild < n->m_children; ++cChild)
+			//{
+				//Region *pMBR = new Region(*(n->m_ptrMBR[cChild]));
+				//m_vec_pMBR.push_back(pMBR);
+				//m_vec_pointCount.push_back(1);
+			//}
 
-			//IShape *pShape;
-			//n->getShape(&pShape);
-			//Region *pMBR = new Region(2);
-			//pShape->getMBR(*pMBR);
-			//m_vec_pMBR.push_back(pMBR);
-			//delete pShape;
+			IShape *pShape;
+			n->getShape(&pShape);
+			Region *pMBR = new Region(2);
+			pShape->getMBR(*pMBR);
+			m_vec_pMBR.push_back(pMBR);
+			delete pShape;
 		}
 
 		if (pFirst->m_pEntry != NULL) delete pFirst->m_pEntry;
