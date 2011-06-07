@@ -609,8 +609,12 @@ double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, uint64_t& id1
 	RTree *queryRTreePtr = dynamic_cast<RTree*>(&query);
 	//std::cout << "============" << std::endl;
 	//std::cout << *queryRTreePtr << std::endl;
-	if (mode==0) {
+
+
+	if (mode==-1) {
 		retDist = this->hausdorff(query, id1, id2, v);
+	} else if (mode==0) {
+		retDist = this->hausdorff2(query, id1, id2, v);
 	} else if (mode==1) {
 		//NodePtr root1 = readNode(this->m_rootID);
 		//NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
@@ -705,8 +709,12 @@ double SpatialIndex::RTree::RTree::mhausdorff(ISpatialIndex& query, uint64_t& id
 	RTree *queryRTreePtr = dynamic_cast<RTree*>(&query);
 
 	//std::cout << *queryRTreePtr << std::endl;
-	if (mode==0) {
+
+
+	if (mode==-1) {
 		retDist = this->mhausdorff(query, id1, id2, v);
+	} else if (mode == 0) {
+		retDist = this->mhausdorff2(query, id1, id2, v);
 	} else if (mode==1) {
 		//NodePtr root1 = readNode(this->m_rootID);
 		//NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
