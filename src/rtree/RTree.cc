@@ -610,7 +610,7 @@ double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, uint64_t& id1
 	//std::cout << "============" << std::endl;
 	//std::cout << *queryRTreePtr << std::endl;
 	if (mode==0) {
-		retDist = this->hausdorff2(query, id1, id2, v);
+		retDist = this->hausdorff(query, id1, id2, v);
 	} else if (mode==1) {
 		//NodePtr root1 = readNode(this->m_rootID);
 		//NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
@@ -706,11 +706,13 @@ double SpatialIndex::RTree::RTree::mhausdorff(ISpatialIndex& query, uint64_t& id
 
 	//std::cout << *queryRTreePtr << std::endl;
 	if (mode==0) {
-		retDist = this->mhausdorff2(query, id1, id2, v);
+		retDist = this->mhausdorff(query, id1, id2, v);
 	} else if (mode==1) {
-		NodePtr root1 = readNode(this->m_rootID);
-		NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
-		retDist = root1->m_nodeMBR.getMHausDistLB(root2->m_nodeMBR);
+		//NodePtr root1 = readNode(this->m_rootID);
+		//NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
+		//retDist = root1->m_nodeMBR.getMHausDistLB(root2->m_nodeMBR);
+		retDist = m_pRootMBR->getMHausDistLB(*(queryRTreePtr->m_pRootMBR));
+
 		v.incNumDistCals(1);
 	} else if (mode==2) {
 		double max = std::numeric_limits<double>::min();
