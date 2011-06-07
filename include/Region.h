@@ -84,7 +84,7 @@ namespace SpatialIndex
 		virtual void makeDimension(uint32_t dimension);
 
 
-		double getHausDistLB(const IShape& in) const;
+		double getHausDistLB(const Region r) const;
 		double getHausDistLB(const std::vector<const Region*> vec_pMBR, double max, int& counter) const;
 		
 		double getMHausDistLB(const IShape& in) const;

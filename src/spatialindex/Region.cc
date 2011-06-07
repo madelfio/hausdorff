@@ -604,7 +604,7 @@ std::ostream& SpatialIndex::operator<<(std::ostream& os, const Region& r)
  * 	Computing HausDistLB from an MBR to another MBR or a point.
  */
 
-double Region::getHausDistLB(const IShape& s) const
+double Region::getHausDistLB(Region r) const
 {
 	if (this->m_dimension != 2) {
 		throw Tools::NotSupportedException(
@@ -612,14 +612,14 @@ double Region::getHausDistLB(const IShape& s) const
 		);
 	}
 
-	Region edge1 = Region(2);
-	Region r = Region(2);
-	s.getMBR(r);
+	//Region edge1 = Region(2);
+	//Region r = Region(2);
+	//s.getMBR(r);
 	//std::cout << "s: " << r.m_pLow[0] << " " << r.m_pLow[1] << " " << r.m_pHigh[0] << " " << r.m_pHigh[1] << std::endl;
 	double max = std::numeric_limits<double>::min();
 	for (int i=0; i<4; i++) {
-		this->getEdge(i,edge1);
-		max = std::max(max,edge1.getMinimumDistanceSq(s));
+		//this->getEdge(i,edge1);
+		max = std::max(max, this->m_vec_pEdge[i]->getMinimumDistanceSq(r));
 		//std::cout << "e: " << edge1.m_pLow[0] << " " << edge1.m_pLow[1] << " " << edge1.m_pHigh[0] << " " << edge1.m_pHigh[1] << std::endl;
 		//std::cout << "Distance: " << std::sqrt(edge1.getMinimumDistanceSq(s)) << std::endl;
 	}
@@ -687,6 +687,7 @@ double Region::getMHausDistLB(const std::vector<const Region*> vec_pMBR, double 
 
   for (int j=0; j<  vec_pMBR.size(); j++) {
     min = std::min(min,this->getMinimumDistanceSq(*(vec_pMBR[j])));
+    //if (min==0) break;
   }
 
 	return std::sqrt(min);

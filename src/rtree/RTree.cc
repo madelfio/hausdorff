@@ -1,4 +1,3 @@
-// Spatial Index Library
 //
 // Copyright (C) 2002 Navel Ltd.
 //
@@ -398,6 +397,8 @@ SpatialIndex::RTree::RTree::~RTree()
 	for (int i=0; i<m_vec_pMBR.size(); i++) {
 		delete m_vec_pMBR.at(i);
 	}
+
+	delete m_pRootMBR;
 }
 
 //
@@ -609,11 +610,12 @@ double SpatialIndex::RTree::RTree::hausdorff(ISpatialIndex& query, uint64_t& id1
 	//std::cout << "============" << std::endl;
 	//std::cout << *queryRTreePtr << std::endl;
 	if (mode==0) {
-		retDist = this->hausdorff(query, id1, id2, v);
+		retDist = this->hausdorff2(query, id1, id2, v);
 	} else if (mode==1) {
-		NodePtr root1 = readNode(this->m_rootID);
-		NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
-		retDist = root1->m_nodeMBR.getHausDistLB(root2->m_nodeMBR);
+		//NodePtr root1 = readNode(this->m_rootID);
+		//NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
+		//retDist = root1->m_nodeMBR.getHausDistLB(root2->m_nodeMBR);
+		retDist = m_pRootMBR->getHausDistLB(*(queryRTreePtr->m_pRootMBR));
 		v.incNumDistCals(4);
 
 	} else if (mode==2) {
@@ -704,7 +706,7 @@ double SpatialIndex::RTree::RTree::mhausdorff(ISpatialIndex& query, uint64_t& id
 
 	//std::cout << *queryRTreePtr << std::endl;
 	if (mode==0) {
-		retDist = this->mhausdorff(query, id1, id2, v);
+		retDist = this->mhausdorff2(query, id1, id2, v);
 	} else if (mode==1) {
 		NodePtr root1 = readNode(this->m_rootID);
 		NodePtr root2 = queryRTreePtr->readNode(queryRTreePtr->m_rootID);
@@ -713,12 +715,13 @@ double SpatialIndex::RTree::RTree::mhausdorff(ISpatialIndex& query, uint64_t& id
 	} else if (mode==2) {
 		double max = std::numeric_limits<double>::min();
 
-		Region r = Region(2);
+		//Region r = Region(2);
 		float weighted_dist = 0.0;
 		int total_pointCount = 0;
 		for (int i=this->m_vec_pMBR.size()-1; i>=0; i--) {
-			this->m_vec_pMBR[i]->getMBR(r);
-			weighted_dist += r.getMHausDistLB(queryRTreePtr->m_vec_pMBR,max) * this->m_vec_pointCount[i];
+			//this->m_vec_pMBR[i]->getMBR(r);
+			//weighted_dist += r.getMHausDistLB(queryRTreePtr->m_vec_pMBR,max) * this->m_vec_pointCount[i];
+			weighted_dist += this->m_vec_pMBR[i]->getMHausDistLB(queryRTreePtr->m_vec_pMBR,max) * this->m_vec_pointCount[i];
 			total_pointCount += this->m_vec_pointCount[i];
 		}
 		v.incNumDistCals(m_vec_pMBR.size()*queryRTreePtr->m_vec_pMBR.size());
@@ -907,6 +910,9 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 	this->listAllPoints();
 	std::priority_queue<NNEntry*, std::vector<NNEntry*>, NNEntry::ascending> queue;
 
+
+
+
 	if (num == m_vec_pMBR.size()) return;
 
 	for (int i=0; i<m_vec_pMBR.size(); i++) {
@@ -920,6 +926,13 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 
 
 	NodePtr root = readNode(this->m_rootID);
+	IShape *pShape;
+	root->getShape(&pShape);
+	m_pRootMBR = new Region(2);
+	pShape->getMBR(*m_pRootMBR);
+	delete pShape;
+
+
 
 	this->m_pointCount = root->updatePointCount();
 
