@@ -157,6 +157,8 @@ namespace SpatialIndex
 			std::vector<const Region*> m_vec_pMBR;
 			std::vector<int> m_vec_pointCount;
 			std::vector<Point>  m_vec_point;
+			std::vector<int>  m_vec_pointID;
+
 			Region* m_pRootMBR;
 
 #ifdef HAVE_PTHREAD_H

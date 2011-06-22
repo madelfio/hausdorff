@@ -56,11 +56,13 @@ Region::Region(const Point& low, const Point& high)
 Region::Region(const Region& r)
 {
 	initialize(r.m_pLow, r.m_pHigh, r.m_dimension);
-	//for (int i=0; i < 4; i++) {
-		//Region *pR = new Region(2);
-		//this->getEdge(i,*pR);
-		//this->m_vec_pEdge.push_back(pR);
-	//}
+	if (this->m_vec_pEdge.empty()) {
+		for (int i=0; i < 4; i++) {
+			Region *pR = new Region(2);
+			this->getEdge(i,*pR);
+			this->m_vec_pEdge.push_back(pR);
+		}
+	}
 }
 
 void Region::initialize(const double* pLow, const double* pHigh, uint32_t dimension)

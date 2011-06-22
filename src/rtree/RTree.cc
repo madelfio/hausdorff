@@ -824,14 +824,26 @@ double SpatialIndex::RTree::RTree::hausdorff2(ISpatialIndex& query, uint64_t& id
 	for (int i=0; i< m_vec_point.size(); i++) {
 		Point *p1 = &(m_vec_point.at(i));
 		double min = std::numeric_limits<double>::max();
+		int nnid = -1;
 		for (int j=0; j< queryRTreePtr->m_vec_point.size(); j++) {
 			Point *p2 = &(queryRTreePtr->m_vec_point.at(j));
 			double dist = p1->getMinimumDistance(*p2);
 			v.incNumDistCals(1);
-			min = std::min(min,dist);
+			//min = std::min(min,dist);
+			if (dist < min) {
+				min = dist;
+				nnid = queryRTreePtr->m_vec_pointID[j];
+			}
+
 			if (min < max) break;
 		}
-		max = std::max(max,min);
+
+		if (min > max) {
+			max = min;
+			id2 = nnid;
+			id1 = this->m_vec_pointID[i];
+		}
+		//max = std::max(max,min);
 	}
 	return max;
 }
@@ -869,6 +881,7 @@ void SpatialIndex::RTree::RTree::listAllPoints()
 
 	try {
 		m_vec_point.clear();
+		m_vec_pointID.clear();
 		// COMPUTE HAUSDORFF HERE
 		std::queue<id_type> node_queue;
 
@@ -886,7 +899,9 @@ void SpatialIndex::RTree::RTree::listAllPoints()
 				if (n->m_level == 0)
 				{
 					Point p = Point(n->m_ptrMBR[cChild]->m_pLow,2);
+
 					this->m_vec_point.push_back(p);
+					this->m_vec_pointID.push_back(n->m_pIdentifier[cChild]);
 				}
 				else {
 					node_queue.push(n->m_pIdentifier[cChild]);
@@ -997,12 +1012,19 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 				queue.push(pEntry);
 			}
 		} else {
-			//for (uint32_t cChild = 0; cChild < n->m_children; ++cChild)
-			//{
-				//Region *pMBR = new Region(*(n->m_ptrMBR[cChild]));
-				//m_vec_pMBR.push_back(pMBR);
-				//m_vec_pointCount.push_back(1);
-			//}
+			/*
+			for (uint32_t cChild = 0; cChild < n->m_children; ++cChild)
+			{
+				Region *pMBR = new Region(*(n->m_ptrMBR[cChild]));
+				//std::cout << pMBR->m_pLow[0] << " " << pMBR->m_pHigh[0] << " ";
+				//std::cout << pMBR->m_pLow[1] << " " << pMBR->m_pHigh[1] << std::endl;
+				//std::cout << pMBR->m_vec_pEdge.size();
+
+
+				m_vec_pMBR.push_back(pMBR);
+				m_vec_pointCount.push_back(1);
+			}
+			*/
 
 			IShape *pShape;
 			n->getShape(&pShape);
@@ -1010,7 +1032,6 @@ void SpatialIndex::RTree::RTree::selectMBRs(const int num) {
 			pShape->getMBR(*pMBR);
 			m_vec_pMBR.push_back(pMBR);
 			m_vec_pointCount.push_back(n->updatePointCount());
-
 			delete pShape;
 		}
 
