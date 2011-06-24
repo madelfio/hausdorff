@@ -865,7 +865,39 @@ double SpatialIndex::RTree::RTree::mhausdorff2(ISpatialIndex& query, uint64_t& i
 		sum += min;
 	}
 
-	return sum/this->m_vec_point.size();
+	double ave = sum/this->m_vec_point.size();
+	computePointPairMHD(query, id1, id2,ave);
+
+	return ave;
+}
+
+void SpatialIndex::RTree::RTree::computePointPairMHD(ISpatialIndex& query, uint64_t& id1, uint64_t& id2, double ave)
+{
+	RTree *queryRTreePtr = dynamic_cast<RTree*>(&query);
+
+	double sum = 0;
+	double minDiff = std::numeric_limits<double>::max();
+	for (int i=0; i< m_vec_point.size(); i++) {
+		Point *p1 = &(m_vec_point.at(i));
+		double min = std::numeric_limits<double>::max();
+		int nnid = -1;
+		for (int j=0; j< queryRTreePtr->m_vec_point.size(); j++) {
+			Point *p2 = &(queryRTreePtr->m_vec_point.at(j));
+			double dist = p1->getMinimumDistance(*p2);
+			if (dist < min) {
+				min = dist;
+				nnid = queryRTreePtr->m_vec_pointID[j];
+			}
+		}
+		double diff = std::abs(ave-min);
+		if (diff < minDiff) {
+			minDiff = diff;
+			id1 = this->m_vec_pointID[i];
+			id2 = nnid;
+		}
+	}
+
+	return;
 }
 
 

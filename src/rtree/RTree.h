@@ -99,6 +99,9 @@ namespace SpatialIndex
 			void insertData_impl(uint32_t dataLength, byte* pData, Region& mbr, id_type id, uint32_t level, byte* overflowTable);
 			bool deleteData_impl(const Region& mbr, id_type id);
 
+			void computePointPairMHD(ISpatialIndex& query, uint64_t& id1, uint64_t& id2, double average);
+
+
 			id_type writeNode(Node*);
 			NodePtr readNode(id_type page);
 			void deleteNode(Node*);
